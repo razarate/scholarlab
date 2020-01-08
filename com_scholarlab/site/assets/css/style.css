@@ -43,11 +43,12 @@ body {
         {
             display: flex;
             flex-flow: row wrap;
-            background-image: url("./components/com_scholarlab/assets/london-view.png");
+            background-image: url("/joomla/components/com_scholarlab/assets/london-view.png");
             background-repeat: repeat-x;
             color: white;
             padding: 20px;
             text-shadow: 1px 1px #F68D2E;
+            height: 238px;
         }
 
             .weather .current .info

@@ -10,6 +10,15 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
+$doc = JFactory::getDocument();
+$doc->addStylesheet( JURI::base(true) . '/components/com_scholarlab/assets/css/bootstrap.min.css' );
+$doc->addStylesheet( JURI::base(true) . '/components/com_scholarlab/assets/css/weather-icons.min.css' );
+$doc->addStylesheet( JURI::base(true) . '/components/com_scholarlab/assets/css/style.css' );
+$doc->addStylesheet( JURI::base(true) . '/components/com_scholarlab/assets/font-awesome/css/font-awesome.min.css' );
+
+//$doc->addScript( JURI::base(true) . '/components/com_scholarlab/assets/js/bootstrap.min.js' );
+//$doc->addScript( JURI::base(true) . '/components/com_scholarlab/assets/js/jquery.min.js' );
+	
 // Get an instance of the controller prefixed by HelloWorld
 $controller = JControllerLegacy::getInstance('ScholarLab');
 
