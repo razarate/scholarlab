@@ -18,36 +18,85 @@ JFactory::getApplication()->enqueueMessage( print_r($this->getThrottledState, 1)
 ?>
             <div class="row" style="background-color:#fafafa;padding:15px">
                 <div class="col-md-6">
-                    <h3 class="text-info">
-                        Configuración de Hardware
-                    </h3>           
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Parámetro</th>
-        <th>Información</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Revisión</td>
-        <td><?php echo $this->hardware['revision'] ?></td>
-      </tr>
-      <tr>
-        <td>Raspberry Pi</td>
-        <td><?php echo $this->hardware['model'] ?></td>
-      </tr>
-      <tr>
-        <td>Procesador</td>
-        <td><?php echo $this->hardware['processor'] ?></td>
-      </tr>
-      <tr>
-        <td>Memoria</td>
-        <td><?php echo $this->hardware['memory'] ?></td>
-      </tr>
-    </tbody>
-  </table>
-
+                    <div class="row">
+                        <h3 class="text-info">
+                            Configuración de Hardware
+                        </h3>           
+                        <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>Parámetro</th>
+                            <th>Información</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Revisión</td>
+                            <td><?php echo $this->hardware['revision'] ?></td>
+                          </tr>
+                          <tr>
+                            <td>Raspberry Pi</td>
+                            <td><?php echo $this->hardware['model'] ?></td>
+                          </tr>
+                          <tr>
+                            <td>Procesador</td>
+                            <td><?php echo $this->hardware['processor'] ?></td>
+                          </tr>
+                          <tr>
+                            <td>Memoria</td>
+                            <td><?php echo $this->hardware['memory'] ?></td>
+                          </tr>
+                        </tbody>
+                        </table>
+                    </div>
+                                        <div class="row">
+                        <h3 class="text-info">
+                            Advertencias del sistema
+                        </h3>           
+                        <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>Parámetro</th>
+                            <th>Información</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Bajo voltaje</td>
+                            <td>
+                                <?php echo ($this->getThrottledState['undervoltagedetected'] == FALSE) ? "No" : "Si" ?></td>
+                          </tr>
+                          <tr>
+                            <td>Frecuencia ARM limitada</td>
+                            <td><?php echo ($this->getThrottledState['armfrequencycapped'] == FALSE) ? "No" : "Si" ?></td>
+                          </tr>
+                          <tr>
+                            <td>Cuello de botella</td>
+                            <td><?php echo ($this->getThrottledState['currentlythrottled'] == FALSE) ? "No" : "Si" ?></td>
+                          </tr>
+                          <tr>
+                            <td>Temperatura alta</td>
+                            <td><?php echo ($this->getThrottledState['templimitactive'] == FALSE) ? "No" : "Si" ?></td>
+                          </tr>
+                          <tr>
+                            <td>Eventos de Bajo Voltaje</td>
+                            <td><?php echo ($this->getThrottledState['undervoltageoccurred'] == FALSE) ? "No" : "Si" ?></td>
+                          </tr>
+                          <tr>
+                            <td>Eventos de ARM saturado</td>
+                            <td><?php echo ($this->getThrottledState['armfrequencycappedoccurred'] == FALSE) ? "No" : "Si" ?></td>
+                          </tr>
+                          <tr>
+                            <td>Cuellos de botella ocurridos</td>
+                            <td><?php echo ($this->getThrottledState['throttlingoccurred'] == FALSE) ? "No" : "Si" ?></td>
+                          </tr>
+                          <tr>
+                            <td>Eventos de Temperatura alta</td>
+                            <td><?php echo ($this->getThrottledState['templimitoccurred'] == FALSE) ? "No" : "Si" ?></td>
+                          </tr>
+                        </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="col-md-6">
                     <!-- Weather Widget - START -->
