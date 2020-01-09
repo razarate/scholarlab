@@ -28,10 +28,15 @@ class ScholarLabViewScholarLab extends JViewLegacy
 	{
 		// Assign data to the view
 		$this->msg = 'Scholar Lab';
-		$this->result = $this->getSensor();
-		$this->getThrottledState = $this->get_throttled_state();
-		$this->hardware = $this->get_hardware_model();
-
+		$this->result = self::getSensor();
+		$this->getThrottledState = self::get_throttled_state();
+		$this->hardware = self::get_hardware_model();
+/*
+JFactory::getApplication()->enqueueMessage( print_r(self::get_ethernet_interface_name(), 1), 'notice');
+JFactory::getApplication()->enqueueMessage( print_r(self::get_wireless_interface_name(), 1), 'notice');
+JFactory::getApplication()->enqueueMessage( print_r(self::unallocated_free_space(), 1), 'notice');
+JFactory::getApplication()->enqueueMessage( print_r(self::get_survey_data(), 1), 'notice');
+*/
 		// Display the view
 		parent::display($tpl);
 	}
@@ -57,6 +62,44 @@ class ScholarLabViewScholarLab extends JViewLegacy
         return $output;
 	}
 
+    /**
+     * Get Raspberry Pi throttled state
+     * See https://github.com/raspberrypi/documentation/blob/JamesH65-patch-vcgencmd-vcdbg-docs/raspbian/applications/vcgencmd.md.
+     * See https://www.raspberrypi.org/forums/viewtopic.php?f=63&t=147781&start=50#p972790.
+     *
+     * +----+----+----+----+----+
+     * |3210|FEDC|BA98|7654|3210|
+     * +----+----+----+----+----+
+     * |    |    |    |    |   A|
+     * |    |    |    |    |  B |
+     * |    |    |    |    | C  |
+     * |    |    |    |    |D   |
+     * |   E|    |    |    |    |
+     * |  F |    |    |    |    |
+     * | G  |    |    |    |    |
+     * |H   |    |    |    |    |
+     * +----+----+----+----+----+
+     * |9876|5432|1098|7654|3210|
+     * +----+----+----+----+----+
+     *
+     * +---+------+-------------–-----------------------+
+     * | # | bits | contains                            |
+     * +---+------+------------–------------------------+
+     * | A |  01  | Under voltage detected              |
+     * | B |  02  | Arm frequency capped                |
+     * | C |  03  | Currently throttled                 |
+     * | D |  04  | Soft temperature limit active       |
+     * |   |      |                                     |
+     * | E |  16  | Under voltage has occurred          |
+     * | F |  17  | Arm frequency capped has occurred   |
+     * | G |  18  | Throttling has occurred             |
+     * | H |  19  | Soft temperature limit has occurred |
+     * +---+------+-------------------------------------+
+     *
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     *
+     * @return associative array of parameters, value or false if unsupported hardware.
+     */
     function get_throttled_state() {
         $throttledstate = null;
 
@@ -89,6 +132,45 @@ class ScholarLabViewScholarLab extends JViewLegacy
         }
     }
 
+    /**
+     * Get Raspberry Pi hardware model
+     *
+     * Revision field in /proc/cpuinfo. The bit fields are as follows.
+     * See https://www.raspberrypi.org/documentation/hardware/raspberrypi/revision-codes/.
+     * See https://github.com/AndrewFromMelbourne/raspberry_pi_revision/.
+     *
+     * +----+----+----+----+----+----+----+----+
+     * |FEDC|BA98|7654|3210|FEDC|BA98|7654|3210|
+     * +----+----+----+----+----+----+----+----+
+     * |    |    |    |    |    |    |    |AAAA|
+     * |    |    |    |    |    |BBBB|BBBB|    |
+     * |    |    |    |    |CCCC|    |    |    |
+     * |    |    |    |DDDD|    |    |    |    |
+     * |    |    | EEE|    |    |    |    |    |
+     * |    |    |F   |    |    |    |    |    |
+     * |    |   G|    |    |    |    |    |    |
+     * |    |  H |    |    |    |    |    |    |
+     * +----+----+----+----+----+----+----+----+
+     * |1098|7654|3210|9876|5432|1098|7654|3210|
+     * +----+----+----+----+----+----+----+----+
+     *
+     * +---+-------+-------------–-+----------------------------------------------------+
+     * | # | bits  | contains      | values                                             |
+     * +---+-------+------------–--+----------------------------------------------------+
+     * | A | 00-03 | PCB Revision  | The PCB revision number                            |
+     * | B | 04-11 | Model name    | A, B, A+, B+, 2B, Alpha, CM1, unknown, 3B, Zero,   |
+     * |   |       |               | CM3, unknown, Zero W, 3B+, 3A+, internal, CM3+, 4B |
+     * | C | 12-15 | Processor     | BCM2835, BCM2836, BCM2837, BCM2711                 |
+     * | D | 16-19 | Manufacturer  | Sony UK, Egoman, Embest, Sony Japan,               |
+     * |   |       |               | Embest, Stadium                                    |
+     * | E | 20-22 | Memory size   | 256 MB, 512 MB, 1 GB, 2 GB, 4 GB                   |
+     * | F | 23-23 | Revision flag | (if set, new-style revision)                       |
+     * | G | 24-24 | Warranty bit  | (if set, warranty void - Pre Pi2)                  |
+     * | H | 25-25 | Warranty bit  | (if set, warranty void - Post Pi2)                 |
+     * +---+-------+---------------+----------------------------------------------------+
+     *
+     * @return associative array of parameters, value or false if unsupported hardware.
+     */
     function get_hardware_model() {
         $revisionnumber = null;
 
@@ -139,4 +221,110 @@ class ScholarLabViewScholarLab extends JViewLegacy
         }
     }
 
+    /**
+     * Get ethernet interface name. Usually 'eth0'.
+     *
+     * @return string containing interface name
+     */
+    function get_ethernet_interface_name() {
+        $path = realpath('/sys/class/net');
+
+        $iter = new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS +
+                \RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
+        $iter = new \RecursiveIteratorIterator($iter, \RecursiveIteratorIterator::CHILD_FIRST);
+        $iter = new \RegexIterator($iter, '|^.*/device$|i', \RecursiveRegexIterator::GET_MATCH);
+        $iter->setMaxDepth(2);
+        $matches = array_values(preg_grep('#^.*/(eth|en).*$#i', array_keys(iterator_to_array($iter))))[0];
+
+        return explode('/', $matches)[4];
+    }
+
+    /**
+     * Get wireless interface name. Usually 'wlan0'.
+     *
+     * @return string containing interface name
+     */
+    static function get_wireless_interface_name() {
+        $path = realpath('/sys/class/net');
+
+        $iter = new \RecursiveDirectoryIterator($path, \RecursiveDirectoryIterator::SKIP_DOTS +
+                \RecursiveDirectoryIterator::FOLLOW_SYMLINKS);
+        $iter = new \RecursiveIteratorIterator($iter, \RecursiveIteratorIterator::CHILD_FIRST);
+        $iter = new \RegexIterator($iter, '|^.*/wireless$|i', \RecursiveRegexIterator::GET_MATCH);
+        $iter->setMaxDepth(2);
+
+        return explode('/', array_keys(iterator_to_array($iter))[0])[4];
+    }
+
+    /**
+     * Find unallocated space on SD card.
+     *
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     *
+     * @return float value if unallocated space, in MB.
+     */
+    static function unallocated_free_space() {
+        // @codingStandardsIgnoreLine
+        $command = "sudo parted /dev/mmcblk0 unit MB print free | tail -n2 | grep 'Free Space' | awk '{print $3}' | sed -e 's/MB$//'";
+        $unallocatedfreespace = exec($command, $out);
+        return (float)$unallocatedfreespace;
+    }
+
+    /**
+     * Get survey data.
+     *
+     * @return associative array of parameters, value
+     */
+    static function get_survey_data() {
+        //require(dirname(dirname(dirname(__FILE__))).'/version.php');
+
+        // Read serial number from device.
+        if ( $cpuinfo = @file_get_contents('/proc/cpuinfo') ) {
+            if ( preg_match_all('/^Serial.*/m', $cpuinfo, $serialmatch) > 0 ) {
+                $serialnumber = explode(' ', $serialmatch[0][0]);
+                $serialnumber = end($serialnumber);
+            }
+        }
+        // Compute device identifier.
+        $deviceid = hash('md5', $serialnumber);
+
+        // Get hardware model.
+        $hardware = self::get_hardware_model();
+
+        // Get MoodleBox image version.
+        if ( file_exists('/etc/moodlebox-info') ) {
+            $moodleboxinfo = file('/etc/moodlebox-info');
+            if ( preg_match_all('/^.*version ((\d+\.)+(.*|\d+)), (\d{4}-\d{2}-\d{2})$/i',
+                    $moodleboxinfo[0], $moodleboxinfomatch) > 0 ) {
+                $moodleboxinfo = $moodleboxinfomatch[1][0] . ' (' . $moodleboxinfomatch[4][0] . ')';
+            }
+        }
+
+        $surveydata = array(
+            'deviceid' => $deviceid,
+            'osrelease' => self::parse_config_file('/etc/os-release')['PRETTY_NAME'],
+            'kernel' => php_uname('s') . ' ' . php_uname('r') . ' ' .  php_uname('m'),
+            'hardware' => $hardware['model'] . ' ' . $hardware['memory'],
+            'moodleboxversion' => $moodleboxinfo,
+            'pluginversion' => $plugin->release . ' (' . $plugin->version . ')',
+            'sdsize' => disk_total_space('/'),
+        );
+
+        return $surveydata;
+    }
+
+    /**
+     * Parse config files with "setting=value" syntax, ignoring commented lines
+     * beginnning with a hash (#).
+     *
+     * @SuppressWarnings(PHPMD.BooleanArgumentFlag)
+     *
+     * @param file $file to parse
+     * @param bool $mode (optional)
+     * @param int $scannermode (optional)
+     * @return associative array of parameters, value
+     */
+    static function parse_config_file($file, $mode = false, $scannermode = INI_SCANNER_NORMAL) {
+        return parse_ini_string(preg_replace('/^#.*\\n/m', '', @file_get_contents($file)), $mode, $scannermode);
+    }
 }
