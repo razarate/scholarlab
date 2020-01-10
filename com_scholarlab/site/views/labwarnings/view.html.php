@@ -31,6 +31,7 @@ class ScholarLabViewLabWarnings extends JViewLegacy
 		$this->get_throttled_state = self::get_throttled_state();
 		$this->hardware = self::get_hardware_model();
         $this->survey_data = self::get_survey_data();
+        $this->vcgencmd_data = self::vcgencmd_data();
 //JFactory::getApplication()->enqueueMessage( print_r(self::get_ethernet_interface_name(), 1), 'notice');
 
 		// Display the view
@@ -301,5 +302,45 @@ class ScholarLabViewLabWarnings extends JViewLegacy
      */
     static function parse_config_file($file, $mode = false, $scannermode = INI_SCANNER_NORMAL) {
         return parse_ini_string(preg_replace('/^#.*\\n/m', '', @file_get_contents($file)), $mode, $scannermode);
+    }
+
+    /**
+     * Get info using vcgencmd command
+     * 
+     * Core temperature
+     * Arm frequency
+     * Core Voltage
+     * 
+     * @return associative array of parameters, value
+     */
+
+    static function vcgencmd_data() {
+        $cpu_temp = null;
+        $arm_freq = null;
+        $core_voltage = null;
+
+        // vcgencmd measure_temp
+        $command = "sudo vcgencmd measure_temp | awk -F'=' '{print $2}'";
+        $cpu_temp = exec($command, $out);
+
+        // vcgencmd measure_clock arm
+        $command = "sudo vcgencmd measure_clock arm | awk -F'=' '{print $2}'";
+        $arm_freq = exec($command, $out);
+
+        // vcgencmd measure_volts
+        $command = "sudo vcgencmd measure_volts | awk -F'=' '{print $2}'";
+        $core_voltage = exec($command, $out);
+
+        // If any is present, return associative array of parameters, value.
+        // Return false otherwise.
+        if ( $cpu_temp || $arm_freq || $core_voltage ) {
+            return array(
+                'cputemp' => $cpu_temp,
+                'armfreq' => $arm_freq,
+                'corevoltage' => $core_voltage
+            );        
+        } else {
+            return false;
+        }
     }
 }

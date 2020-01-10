@@ -10,7 +10,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
-//JFactory::getApplication()->enqueueMessage( print_r($this->hardware, 1), 'notice');
+//JFactory::getApplication()->enqueueMessage( print_r($this->vcgencmd_data, 1), 'notice');
 ?>
 
 <div class="row">
@@ -53,15 +53,31 @@ defined('_JEXEC') or die('Restricted access');
               <div class="stats">
 
                   <div>
+                      <strong>CPU TEMP</strong> <?php echo $this->vcgencmd_data['cputemp'] ?>
+                  </div>
+
+                  <div>
+                      <strong>FRECUENCY</strong> <?php echo ($this->vcgencmd_data['armfreq'] / 1000000) ?> <small>MHz</small>
+                  </div>
+
+                  <div>
+                      <strong>CORE VOLTAGE</strong> <?php echo $this->vcgencmd_data['corevoltage'] ?>
+                  </div>
+
+              </div>
+
+              <div class="stats">
+
+                  <div>
                       <strong>PROCESADOR</strong> <?php echo $this->hardware['processor'] ?>
                   </div>
 
                   <div>
-                      <strong>OS</strong> <?php echo $this->survey_data['osrelease'] ?>
+                      <strong>OS</strong> ds
                   </div>
 
                   <div>
-                      <strong>KERNEL</strong> <?php echo $this->survey_data['kernel'] ?>
+                      <strong>KERNEL</strong> sd
                   </div>
 
               </div>
@@ -78,7 +94,6 @@ defined('_JEXEC') or die('Restricted access');
       <div class="tile">
           <div class="wrapper">
               <div class="header">Warnings</div>
-
               <div class="banner-img">
                   <img src="<?php echo JURI::base(true) . '/components/com_scholarlab/assets/img/RasPiLogoWarning.png' ?>" alt="Warning">
               </div>
@@ -101,11 +116,11 @@ defined('_JEXEC') or die('Restricted access');
                   </div>
 
                   <div>
-                      <strong>#</strong> <?php echo ($this->get_throttled_state['undervoltageoccurred'] == FALSE) ? "No" : "Si" ?>
+                      <strong>Frecuencia</strong> <?php echo ($this->get_throttled_state['armfrequencycapped'] == FALSE) ? "No" : "Si" ?>
                   </div>
 
                   <div>
-                      <strong>DECLINED</strong> 182
+                      <strong>Bloqueo</strong> <?php echo ($this->get_throttled_state['currentlythrottled'] == FALSE) ? "No" : "Si" ?>
                   </div>
 
               </div>
@@ -113,15 +128,15 @@ defined('_JEXEC') or die('Restricted access');
               <div class="stats">
 
                   <div>
-                      <strong>Frec ARM</strong> <?php echo ($this->get_throttled_state['armfrequencycapped'] == FALSE) ? "No" : "Si" ?>
+                      <strong># LV</strong> <?php echo ($this->get_throttled_state['undervoltageoccurred'] == FALSE) ? "No" : "Si" ?>
                   </div>
 
                   <div>
-                      <strong>#</strong> <?php echo ($this->get_throttled_state['armfrequencycappedoccurred'] == FALSE) ? "No" : "Si" ?>
+                      <strong># Frec</strong> <?php echo ($this->get_throttled_state['armfrequencycappedoccurred'] == FALSE) ? "No" : "Si" ?>
                   </div>
 
                   <div>
-                      <strong>DECLINED</strong> 182
+                      <strong># Bloqueo</strong> <?php echo ($this->get_throttled_state['throttlingoccurred'] == FALSE) ? "No" : "Si" ?>
                   </div>
 
               </div>
@@ -137,7 +152,7 @@ defined('_JEXEC') or die('Restricted access');
                   </div>
 
                   <div>
-                      <strong>DECLINED</strong> 182
+                      <strong>DECLINED</strong> <i class="far fa-check-circle"></i>
                   </div>
 
               </div>
@@ -152,14 +167,11 @@ defined('_JEXEC') or die('Restricted access');
 </div>
 
   <div class="row" style="background-color:#fafafa;padding:15px">
-      <div class="col-md-1 col-xs-6" >
-        <!--
-          <img alt="Bootstrap Image Preview" src="/static/digitalborder_logo.jpg" style="max-width:62px"/>
-        -->
-        Imagen
+      <div class="col-md-3 col-xs-6" >
+          <img alt="Raspi" src="<?php echo JURI::base(true) . '/components/com_scholarlab/assets/img/RasPiLogo.png' ?>" style="max-width:100px"/>
       </div>
-      <div class="col-md-11 col-xs-6">
-          <p style="margin-top:20px">Cuellos de botella <a href="http://www.piensocial.com" target="_blank">Piensocial.com</a> <span class="hidden-xs"> | <?php echo ($this->get_throttled_state['currentlythrottled'] == FALSE) ? "No" : "Si" ?></span></p>
-          Eventos ocurridos <?php echo ($this->get_throttled_state['throttlingoccurred'] == FALSE) ? "No" : "Si" ?>
+      <div class="col-md-8 col-xs-6">
+          <p style="margin-top:20px">Sistema Operativo: <?php echo $this->survey_data['osrelease'] ?> </p>
+          <p style="margin-top:2px">Kernel: <?php echo $this->survey_data['kernel'] ?> </span></p>
       </div>
   </div>
