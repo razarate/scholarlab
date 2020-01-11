@@ -1,7 +1,7 @@
 <?php
 /**
- * @package     Joomla.Administrator
- * @subpackage  com_helloworld
+ * @package     Scholar Lab
+ * @subpackage  com_scholarlab
  *
  * @copyright   Copyright (C) 2005 - 2019 Open Source Matters, Inc. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
@@ -16,8 +16,6 @@ $doc->addStylesheet( JURI::base(true) . '/components/com_scholarlab/assets/css/w
 $doc->addStylesheet( JURI::base(true) . '/components/com_scholarlab/assets/css/style.css' );
 $doc->addStylesheet( JURI::base(true) . '/components/com_scholarlab/assets/font-awesome/css/font-awesome.min.css' );
 
-//$doc->addScript( JURI::base(true) . '/components/com_scholarlab/assets/js/bootstrap.min.js' );
-//$doc->addScript( JURI::base(true) . '/components/com_scholarlab/assets/js/jquery.min.js' );
 	
 // Get an instance of the controller prefixed by HelloWorld
 $controller = JControllerLegacy::getInstance('ScholarLab');
