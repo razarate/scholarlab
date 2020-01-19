@@ -27,10 +27,23 @@ class ScholarLabViewScholarLab extends JViewLegacy
 	function display($tpl = null)
 	{
 		// Assign data to the view
-		$this->msg = 'Scholar Lab';
-		$this->result = self::getSensor();
+		$this->result = self::getAliveData();
 		$this->getThrottledState = self::get_throttled_state();
 		$this->hardware = self::get_hardware_model();
+
+        // Assign data to the view
+        //$this->sensorData = $this->get('Sensor');
+
+         
+        // Check for errors.
+        if (count($errors = $this->get('Errors')))
+        {
+            JLog::add(implode('<br />', $errors), JLog::WARNING, 'jerror');
+
+            return false;
+        }
+
+
 /*
 JFactory::getApplication()->enqueueMessage( print_r(self::get_ethernet_interface_name(), 1), 'notice');
 JFactory::getApplication()->enqueueMessage( print_r(self::get_wireless_interface_name(), 1), 'notice');
@@ -41,7 +54,7 @@ JFactory::getApplication()->enqueueMessage( print_r(self::get_survey_data(), 1),
 		parent::display($tpl);
 	}
 
-	function getSensor() {
+	function getAliveData() {
 //		$output = exec('sudo python3 /home/moodlebox/scholarlab/sensorData.py');
 //		$this->result = $output;
 
@@ -59,6 +72,10 @@ JFactory::getApplication()->enqueueMessage( print_r(self::get_survey_data(), 1),
 
         // close curl resource to free up system resources
         curl_close($ch);
+
+        $scholarlab_model = JModelLegacy::getInstance( 'ScholarLab', 'ScholarLabModel', array() );
+        $scholarlab_model->saveSensorData('bmp280', $output);
+
         return $output;
 	}
 
