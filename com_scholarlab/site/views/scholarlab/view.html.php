@@ -30,10 +30,9 @@ class ScholarLabViewScholarLab extends JViewLegacy
 		$this->result = self::getAliveData();
 		$this->getThrottledState = self::get_throttled_state();
 		$this->hardware = self::get_hardware_model();
-
+        $this->tempGraphData = self::getTempGraphData();
         // Assign data to the view
         //$this->sensorData = $this->get('Sensor');
-
          
         // Check for errors.
         if (count($errors = $this->get('Errors')))
@@ -42,8 +41,6 @@ class ScholarLabViewScholarLab extends JViewLegacy
 
             return false;
         }
-
-
 /*
 JFactory::getApplication()->enqueueMessage( print_r(self::get_ethernet_interface_name(), 1), 'notice');
 JFactory::getApplication()->enqueueMessage( print_r(self::get_wireless_interface_name(), 1), 'notice');
@@ -54,11 +51,44 @@ JFactory::getApplication()->enqueueMessage( print_r(self::get_survey_data(), 1),
 		parent::display($tpl);
 	}
 
+    function getTempGraphData ($sensorType = NULL, $fromDate = NULL, $toDate = NULL) {
+
+        // Load Temp data from database
+        $scholarlab_model = JModelLegacy::getInstance( 'ScholarLab', 'ScholarLabModel', array() );
+        $rawTempData = $scholarlab_model->getTempRecords();
+
+
+        // Creating arrays for view
+        foreach ($rawTempData as &$data) {
+
+            // Temp array
+            $tempDataRaw = $data['data'];
+            $tempDataRaw = json_decode($tempDataRaw);
+            $tempData[] = $tempDataRaw->Temp;
+
+            // Date array
+
+            if (($timestamp = strtotime($data['created'])) !== false) {
+              // output a date in day/month/year format:
+              $date = date("j/M/Y", $timestamp); // see the date manual page for format options
+              $dateData[] = "'" . $date . "'";
+            }
+
+        }
+
+        // Packing both arrays to return data
+        $tempDateData['temp'] = $tempData;
+        $tempDateData['date'] = $dateData;
+
+        return $tempDateData;
+
+    }
+
 	function getAliveData() {
 //		$output = exec('sudo python3 /home/moodlebox/scholarlab/sensorData.py');
 //		$this->result = $output;
 
-		        // create curl resource
+		// create curl resource
         $ch = curl_init();
 
         // set url
@@ -73,6 +103,7 @@ JFactory::getApplication()->enqueueMessage( print_r(self::get_survey_data(), 1),
         // close curl resource to free up system resources
         curl_close($ch);
 
+        // Saving all records to populate database
         $scholarlab_model = JModelLegacy::getInstance( 'ScholarLab', 'ScholarLabModel', array() );
         $scholarlab_model->saveSensorData('bmp280', $output);
 

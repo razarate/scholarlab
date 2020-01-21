@@ -40,7 +40,7 @@ class ScholarlabModelScholarlab extends JModelList {
 	 *
 	 * @return  json     Fetched Json from Table for relevant Id
 	 */
-	public function getSensor($id = NULL)
+	public function getTempRecords($sensorType = NULL, $fromDate = NULL, $toDate = NULL)
 	{
 		// Get a db connection.
 		$db = JFactory::getDbo();
@@ -51,13 +51,14 @@ class ScholarlabModelScholarlab extends JModelList {
 		// Select all records from the user profile table where key begins with "custom.".
 		// Order it by the ordering field.
 		$query
-			->select($db->quoteName(array('sensor_id', 'data')))
+			->select($db->quoteName(array('id', 'sensor_id', 'data', 'created')))
 			->from($db->quoteName('#__scholarlab_sensor_measurement'))
+			->order('id DESC')
 			->setLimit('10');
 
 		// Reset the query using our newly populated query object.
 		$db->setQuery($query);
-		$row = $db->loadRowList();
+		$row = $db->loadAssocList();
 
 		return $row;
 	}
