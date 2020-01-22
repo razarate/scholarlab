@@ -77,8 +77,8 @@ JFactory::getApplication()->enqueueMessage( print_r(self::get_survey_data(), 1),
         }
 
         // Packing both arrays to return data
-        $tempDateData['temp'] = $tempData;
-        $tempDateData['date'] = $dateData;
+        $tempDateData['temp'] = array_reverse($tempData);
+        $tempDateData['date'] = array_reverse($dateData);
 
         return $tempDateData;
 
