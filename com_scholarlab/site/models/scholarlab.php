@@ -40,27 +40,72 @@ class ScholarlabModelScholarlab extends JModelList {
 	 *
 	 * @return  json     Fetched Json from Table for relevant Id
 	 */
-	public function getTempRecords($sensorType = NULL, $fromDate = NULL, $toDate = NULL)
-	{
-		// Get a db connection.
-		$db = JFactory::getDbo();
 
-		// Create a new query object.
-		$query = $db->getQuery(true);
 
-		// Select all records from the user profile table where key begins with "custom.".
-		// Order it by the ordering field.
-		$query
-			->select($db->quoteName(array('id', 'sensor_id', 'data', 'created')))
-			->from($db->quoteName('#__scholarlab_sensor_measurement'))
-			->order('id DESC')
-			->setLimit('10');
+	public function tempGraphData($sensorType = NULL, $fromDate = NULL, $toDate = NULL) {
 
-		// Reset the query using our newly populated query object.
-		$db->setQuery($query);
-		$row = $db->loadAssocList();
+		if ($fromDate <= $toDate) {
 
-		return $row;
+			// Get a db connection.
+			$db = JFactory::getDbo();
+
+			// Create a new query object.
+			$query = $db->getQuery(true);
+
+			// Select all records from the user profile table where key begins with "custom.".
+			// Order it by the ordering field.
+			$query
+				->select(" DISTINCT DATE(created) ")
+				->from($db->quoteName('#__scholarlab_sensor_measurement'))
+				->where($db->quoteName('created') . ' BETWEEN ' . $db->quote($fromDate) . ' AND ' . $db->quote($toDate));
+
+			// Reset the query using our newly populated query object.
+			$db->setQuery($query);
+
+			$dates = $db->loadColumn();
+
+			$days = count($dates);
+
+			if ($days > 12) {
+				# some code here ...
+			} else {
+				# some code here ...
+			}
+
+
+			// Get a db connection.
+			$db = JFactory::getDbo();
+
+			foreach ($dates as $date) {
+			
+				// Create a new query object.
+				$query = $db->getQuery(true);
+
+				// Select all records from sensor measurement table.
+				// Order it by table id.
+				$query
+					->select("AVG(JSON_EXTRACT(data, '$.Temp'))")
+					->from($db->quoteName('#__scholarlab_sensor_measurement'))
+					->where($db->quoteName('created') . ' BETWEEN ' . $db->quote($date) . ' AND ' . $db->quote($date . ' 23:59:59'));
+
+				// Reset the query using our newly populated query object.
+				$db->setQuery($query);
+
+				// Packing result to return data
+		        $tempData[] = $db->loadResult();
+		        $dateData[] = $date;
+			}
+
+			// Packing both arrays to return data
+	        $tempGraphData['temp'] = $tempData;
+	        $tempGraphData['date'] = $dateData;
+
+			return $tempGraphData;
+		}else {
+			JFactory::getApplication()->enqueueMessage( 'La fecha de fin es menor que fecha de inicio' , 'notice');
+
+		}
+		
 	}
 
 	/**
@@ -70,7 +115,7 @@ class ScholarlabModelScholarlab extends JModelList {
 	 *
 	 * @return  json     Fetched Json from Table for relevant Id
 	 */
-
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>> Cambiar nombre a insertSensorData - generalizar la función <<<<<<<<<<<<<<<<<<<<<<<
 	public function saveSensorData ($sensor_id = NULL, $data = NULL) {
 
 		if (!is_null($sensor_id) AND !is_null($data)) {

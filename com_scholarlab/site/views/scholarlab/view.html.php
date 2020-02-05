@@ -52,35 +52,20 @@ JFactory::getApplication()->enqueueMessage( print_r(self::get_survey_data(), 1),
 	}
 
     function getTempGraphData ($sensorType = NULL, $fromDate = NULL, $toDate = NULL) {
+        // Testing dates
+        $fromDate = '2020-01-01';
+        $toDate = '2020-02-10';
+
+        if ($fromDate <= $toDate) {
+            $days = round((strtotime($toDate) - strtotime($fromDate)) / (60 * 60 * 24));
+            $deltaDays = ($days > 12) ? $days/12 : 1 ;
+        }
 
         // Load Temp data from database
         $scholarlab_model = JModelLegacy::getInstance( 'ScholarLab', 'ScholarLabModel', array() );
-        $rawTempData = $scholarlab_model->getTempRecords();
+        $tempGraphData = $scholarlab_model->tempGraphData($sensorType = NULL, $fromDate, $toDate);
 
-
-        // Creating arrays for view
-        foreach ($rawTempData as &$data) {
-
-            // Temp array
-            $tempDataRaw = $data['data'];
-            $tempDataRaw = json_decode($tempDataRaw);
-            $tempData[] = $tempDataRaw->Temp;
-
-            // Date array
-
-            if (($timestamp = strtotime($data['created'])) !== false) {
-              // output a date in day/month/year format:
-              $date = date("j/M/Y", $timestamp); // see the date manual page for format options
-              $dateData[] = "'" . $date . "'";
-            }
-
-        }
-
-        // Packing both arrays to return data
-        $tempDateData['temp'] = array_reverse($tempData);
-        $tempDateData['date'] = array_reverse($dateData);
-
-        return $tempDateData;
+        return $tempGraphData;
 
     }
 
