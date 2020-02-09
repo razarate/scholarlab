@@ -66,34 +66,52 @@ class ScholarlabModelScholarlab extends JModelList {
 
 			$days = count($dates);
 
+			
 			if ($days > 12) {
-				# some code here ...
-			} else {
-				# some code here ...
-			}
 
+				list($whole, $decimal) = explode('.', $days/12);
+
+			} else {
+				$whole = 1;
+				$decimal = 0;
+			}
 
 			// Get a db connection.
 			$db = JFactory::getDbo();
 
+			$i = $whole;
+			$extra = $decimal;
+
 			foreach ($dates as $date) {
-			
-				// Create a new query object.
-				$query = $db->getQuery(true);
+		
+				if ($i == $whole) {
+					$i = $i-1;
 
-				// Select all records from sensor measurement table.
-				// Order it by table id.
-				$query
-					->select("AVG(JSON_EXTRACT(data, '$.Temp'))")
-					->from($db->quoteName('#__scholarlab_sensor_measurement'))
-					->where($db->quoteName('created') . ' BETWEEN ' . $db->quote($date) . ' AND ' . $db->quote($date . ' 23:59:59'));
+					// Create a new query object.
+					$query = $db->getQuery(true);
 
-				// Reset the query using our newly populated query object.
-				$db->setQuery($query);
+					// Select all records from sensor measurement table.
+					// Order it by table id.
+					$query
+						->select("AVG(JSON_EXTRACT(data, '$.Temp'))")
+						->from($db->quoteName('#__scholarlab_sensor_measurement'))
+						->where($db->quoteName('created') . ' BETWEEN ' . $db->quote($date . ' 00:00:00') . ' AND ' . $db->quote($date . ' 23:59:59'));
 
-				// Packing result to return data
-		        $tempData[] = $db->loadResult();
-		        $dateData[] = $date;
+					// Reset the query using our newly populated query object.
+					$db->setQuery($query);
+
+					// Packing result to return data
+			        $tempData[] = $db->loadResult();
+			        $dateData[] = "'" . $date . "'";
+
+				} else {
+					if ($i <= 0) {
+						$i = $whole;
+					} else {
+						$i-1;	
+					} 
+
+				}
 			}
 
 			// Packing both arrays to return data
