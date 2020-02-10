@@ -53,12 +53,14 @@ JFactory::getApplication()->enqueueMessage( print_r(self::get_survey_data(), 1),
 
     function getTempGraphData ($sensorType = NULL, $fromDate = NULL, $toDate = NULL) {
         // Testing dates
-        $fromDate = '2020-01-01';
-        $toDate = '2020-02-10';
+
+        if (is_null($fromDate) || is_null($toDate)) {
+            $fromDate = date('Y-m-d',strtotime('-30 days'));    //Thirty days before 'now'
+            $toDate = date('Y-m-d');
+        }
 
         if ($fromDate <= $toDate) {
-            $days = round((strtotime($toDate) - strtotime($fromDate)) / (60 * 60 * 24));
-            $deltaDays = ($days > 12) ? $days/12 : 1 ;
+
         }
 
         // Load Temp data from database
