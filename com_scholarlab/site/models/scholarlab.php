@@ -45,6 +45,100 @@ class ScholarlabModelScholarlab extends JModelList {
 	public function tempGraphData($sensorType = NULL, $fromDate = NULL, $toDate = NULL) {
 
 		if ($fromDate <= $toDate) {
+			
+			// Get a db connection.
+			$db = JFactory::getDbo();
+
+			// Create a new query object.
+			$query = $db->getQuery(true);
+
+			// Select all records from the user profile table where key begins with "custom.".
+			// Order it by the ordering field.
+			$query
+				->select(" DISTINCT DATE(created) ")
+				->from($db->quoteName('#__scholarlab_sensor_measurement'))
+				->where($db->quoteName('sensor_id') . ' LIKE ' . $db->quote($sensorType));
+				if (!is_null($fromDate) AND !is_null($toDate)) {
+					//$query->where($db->quoteName('created') . ' BETWEEN ' . $db->quote($fromDate) . ' AND ' . $db->quote($toDate));
+				}
+
+			// Reset the query using our newly populated query object.
+			$db->setQuery($query);
+
+			$dates = $db->loadColumn();
+
+			$days = count($dates);
+
+			
+			if ($days > 12) {
+
+				list($whole, $decimal) = explode('.', $days/12);
+
+			} else {
+				$whole = 1;
+				$decimal = 0;
+			}
+
+			// Get a db connection.
+			$db = JFactory::getDbo();
+
+			$i = $whole;
+			$extra = $decimal;
+
+			foreach ($dates as $date) {
+		
+				if ($i == $whole) {
+					$i = $i-1;
+
+					// Create a new query object.
+					$query = $db->getQuery(true);
+
+					// Select all records from sensor measurement table.
+					// Order it by table id.
+
+					$query
+						->select("AVG(JSON_EXTRACT(data, '$.Temp')), AVG(JSON_EXTRACT(data, '$.Pressure'))")
+						->from($db->quoteName('#__scholarlab_sensor_measurement'))
+						->where($db->quoteName('sensor_id') . ' LIKE ' . $db->quote($sensorType))
+						->where($db->quoteName('created') . ' BETWEEN ' . $db->quote($date . ' 00:00:00') . ' AND ' . $db->quote($date . ' 23:59:59'));
+
+					// Reset the query using our newly populated query object.
+					$db->setQuery($query);
+
+					// Packing result to return data
+					$rawData = $db->loadRow();
+			        $tempData[] = $rawData[0];
+			        $pressureData[] = $rawData[1];
+			        $dateData[] = "'" . date('d M y', strtotime($date)) . "'";
+
+				} else {
+					if ($i <= 0) {
+						$i = $whole;
+					} else {
+						$i-1;	
+					} 
+
+				}
+			}
+
+			// Packing both arrays to return data
+	        $tempGraphData['temp'] = $tempData;
+	        $tempGraphData['press'] = $pressureData;
+	        $tempGraphData['date'] = $dateData;
+
+			return $tempGraphData;
+
+		}else {
+			JFactory::getApplication()->enqueueMessage( 'La fecha de fin es menor que fecha de inicio' , 'notice');
+
+		}
+		
+	}
+
+
+	public function tempGraphDht11($sensorType = NULL, $fromDate = NULL, $toDate = NULL) {
+
+		if ($fromDate <= $toDate) {
 
 			// Get a db connection.
 			$db = JFactory::getDbo();
@@ -57,6 +151,7 @@ class ScholarlabModelScholarlab extends JModelList {
 			$query
 				->select(" DISTINCT DATE(created) ")
 				->from($db->quoteName('#__scholarlab_sensor_measurement'))
+				->where($db->quoteName('sensor_id') . ' LIKE ' . $db->quote($sensorType))
 				->where($db->quoteName('created') . ' BETWEEN ' . $db->quote($fromDate) . ' AND ' . $db->quote($toDate));
 
 			// Reset the query using our newly populated query object.
@@ -92,17 +187,23 @@ class ScholarlabModelScholarlab extends JModelList {
 
 					// Select all records from sensor measurement table.
 					// Order it by table id.
+
 					$query
-						->select("AVG(JSON_EXTRACT(data, '$.Temp'))")
+						->select("AVG(JSON_EXTRACT(data, '$.Temp')), AVG(JSON_EXTRACT(data, '$.Humidity'))")
 						->from($db->quoteName('#__scholarlab_sensor_measurement'))
+						->where($db->quoteName('sensor_id') . ' LIKE ' . $db->quote($sensorType))
 						->where($db->quoteName('created') . ' BETWEEN ' . $db->quote($date . ' 00:00:00') . ' AND ' . $db->quote($date . ' 23:59:59'));
 
 					// Reset the query using our newly populated query object.
 					$db->setQuery($query);
 
 					// Packing result to return data
-			        $tempData[] = $db->loadResult();
-			        $dateData[] = "'" . $date . "'";
+					$rawData = $db->loadRow();
+
+			        $tempData[] = $rawData[0];
+			        $humidityData[] = $rawData[1];
+			        $dateData[] = "'" . date('d M y', strtotime($date)) . "'";
+
 
 				} else {
 					if ($i <= 0) {
@@ -116,6 +217,7 @@ class ScholarlabModelScholarlab extends JModelList {
 
 			// Packing both arrays to return data
 	        $tempGraphData['temp'] = $tempData;
+	        $tempGraphData['humidity'] = $humidityData;
 	        $tempGraphData['date'] = $dateData;
 
 			return $tempGraphData;
@@ -125,6 +227,7 @@ class ScholarlabModelScholarlab extends JModelList {
 		}
 		
 	}
+
 
 	/**
 	 * Get sensor data

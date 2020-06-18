@@ -17,20 +17,22 @@ defined('_JEXEC') or die('Restricted access');
  */
 class ScholarLabViewScholarLab extends JViewLegacy
 {
-	/**
-	 * Display the Hello World view
-	 *
-	 * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
-	 *
-	 * @return  void
-	 */
-	function display($tpl = null)
-	{
-		// Assign data to the view
-		$this->result = self::getAliveData();
-		$this->getThrottledState = self::get_throttled_state();
-		$this->hardware = self::get_hardware_model();
-        $this->tempGraphData = self::getTempGraphData();
+    /**
+     * Display the Hello World view
+     *
+     * @param   string  $tpl  The name of the template file to parse; automatically searches through the template paths.
+     *
+     * @return  void
+     */
+    function display($tpl = null)
+    {
+        // Assign data to the view
+        $this->result = self::getAliveData();
+        $this->getThrottledState = self::get_throttled_state();
+        $this->hardware = self::get_hardware_model();
+        $this->tempGraphData = self::getTempGraphData('bmp280', NULL, NULL);
+        $this->tempGraphDht11 = self::getTempGraphDht11('dht11', NULL, NULL);
+
         // Assign data to the view
         //$this->sensorData = $this->get('Sensor');
          
@@ -47,9 +49,9 @@ JFactory::getApplication()->enqueueMessage( print_r(self::get_wireless_interface
 JFactory::getApplication()->enqueueMessage( print_r(self::unallocated_free_space(), 1), 'notice');
 JFactory::getApplication()->enqueueMessage( print_r(self::get_survey_data(), 1), 'notice');
 */
-		// Display the view
-		parent::display($tpl);
-	}
+        // Display the view
+        parent::display($tpl);
+    }
 
     function getTempGraphData ($sensorType = NULL, $fromDate = NULL, $toDate = NULL) {
         // Testing dates
@@ -65,17 +67,36 @@ JFactory::getApplication()->enqueueMessage( print_r(self::get_survey_data(), 1),
 
         // Load Temp data from database
         $scholarlab_model = JModelLegacy::getInstance( 'ScholarLab', 'ScholarLabModel', array() );
-        $tempGraphData = $scholarlab_model->tempGraphData($sensorType = NULL, $fromDate, $toDate);
+        $tempGraphData = $scholarlab_model->tempGraphData($sensorType, $fromDate, $toDate);
 
         return $tempGraphData;
 
     }
 
-	function getAliveData() {
-//		$output = exec('sudo python3 /home/moodlebox/scholarlab/sensorData.py');
-//		$this->result = $output;
+    function getTempGraphDht11 ($sensorType = NULL, $fromDate = NULL, $toDate = NULL) {
+        // Testing dates
 
-		// create curl resource
+        if (is_null($fromDate) || is_null($toDate)) {
+            $fromDate = date('Y-m-d',strtotime('-30 days'));    //Thirty days before 'now'
+            $toDate = date('Y-m-d');
+        }
+
+        if ($fromDate <= $toDate) {
+
+        }
+
+        // Load Temp data from database
+        $scholarlab_model = JModelLegacy::getInstance( 'ScholarLab', 'ScholarLabModel', array() );
+        $tempGraphData = $scholarlab_model->tempGraphDht11($sensorType, $fromDate, $toDate);
+
+        return $tempGraphData;
+
+    }
+    function getAliveData() {
+//      $output = exec('sudo python3 /home/moodlebox/scholarlab/sensorData.py');
+//      $this->result = $output;
+
+        // create curl resource
         $ch = curl_init();
 
         // set url
@@ -94,8 +115,31 @@ JFactory::getApplication()->enqueueMessage( print_r(self::get_survey_data(), 1),
         $scholarlab_model = JModelLegacy::getInstance( 'ScholarLab', 'ScholarLabModel', array() );
         $scholarlab_model->saveSensorData('bmp280', $output);
 
+///////////////////////////////////////////////////////////
+
+// create curl resource
+$ch = curl_init();
+
+// set url
+curl_setopt($ch, CURLOPT_URL, "moodlebox.home:8080/dht11");
+
+//return the transfer as a string
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+// $output contains the output string
+$output = curl_exec($ch);
+
+// close curl resource to free up system resources
+curl_close($ch);
+
+///////////////////////////////////////////////////////////
+
+        // Saving all records to populate database
+        $scholarlab_model->saveSensorData('dht11', $output);
+
+
         return $output;
-	}
+    }
 
     /**
      * Get Raspberry Pi throttled state
