@@ -10,117 +10,182 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
-//$sensorValuesArray = $this->result;
-$sensorValuesArray = json_decode($this->result, true);
-//JFactory::getApplication()->enqueueMessage( print_r($sensorValuesArray, 1), 'notice');
-//JFactory::getApplication()->enqueueMessage( print_r($this->getThrottledState, 1), 'notice');
-//JFactory::getApplication()->enqueueMessage( 'Default vista: <pre>' . print_r($this->sensorData, 1) . '</pre>', 'notice');
-//JFactory::getApplication()->enqueueMessage( print_r($this->tempGraphDht11, 1), 'notice');
+JHtml::_('bootstrap.tooltip');
+
+$sensorData = $this->sensorData;
+
+//JFactory::getApplication()->enqueueMessage( print_r($sensorData, 1), 'notice');
 
 ?>
-<!--  https://bootsnipp.com/snippets/exy4M  -->
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                <div class="tile">
-                    <div class="wrapper">
-                        <div class="header">Histórico de Temperaturas</div>
-
-                        <div class="banner-img">
-                            <!-- Weather Widget - START -->
-                            <div class="weather">
-                                <canvas id="tempChart" width="400" height="400"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="dates">
-                            <div class="start">
-                                <strong>De</strong> <?php echo date('d M Y',strtotime('-30 days')) ?>
-                                <span></span>
-                            </div>
-                            <div class="ends">
-                                <strong>Hasta</strong> <?php echo date('d M Y') ?>
-                            </div>
-                        </div>
-
-                    </div>
-                </div> 
+<?php echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'datosAmbientales')); ?>
+  <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'datosAmbientales', 'Datos ambientales'); ?>
+    <div class="row">
+      <div class="col">
+        <div class="weather-card one">
+          <div class="top">
+            <div class="wrapper">
+  <!--
+              <div class="mynav">
+                <a href="javascript:;"><span class="lnr lnr-chevron-left"></span></a>
+                <a href="javascript:;"><span class="lnr lnr-cog"></span></a>
+              </div>
+  -->
+              <h1 class="heading">Datos ambientales</h1>
+              <h3 class="location">Xalapa, Veracruz</h3>
+              <p class="temp">
+                <span class="temp-value"><?php echo round($sensorData['bmp280']['Temp'], 2) ?></span>
+                <span class="deg">0</span>
+                <a href="javascript:;"><span class="temp-type">C</span></a>
+              </p>
             </div>
-
-            <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
-                <div class="tile">
-                    <div class="wrapper">
-                        <div class="header">El clima de hoy</div>
-
-                        <div class="banner-img">
-                            <!-- Weather Widget - START -->
-                            <div class="weather">
-                                <div class="current">
-                                    <div class="info">
-                                        <div>&nbsp;</div>
-                                        <div class="city"><small><small>CITY:</small></small> Xalapa</div>
-                                        <div class="temp"><?php echo number_format($sensorValuesArray['Temp'], 1) ?>&deg; <small>C</small></div>
-                                        <div class="wind"><small><small>Humedad:</small></small> <?php echo number_format($sensorValuesArray['Humidity']) ?> %</div>
-                                        <div>&nbsp;</div>
-                                    </div>
-                                    <div class="icon">
-                                        <span class="wi-day-sunny"></span>
-                                    </div>
-                                </div>
-                                <div class="future">
-                                    <div class="day">
-                                        <h3>Mon</h3>
-                                        <p><span class="wi-day-cloudy"></span></p>
-                                    </div>
-                                    <div class="day">
-                                        <h3>Tue</h3>
-                                        <p><span class="wi-showers"></span></p>
-                                    </div>
-                                    <div class="day">
-                                        <h3>Wed</h3>
-                                        <p><span class="wi-rain"></span></p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="footer">
-                            <a href="#" class="Cbtn Cbtn-primary">View</a>
-                            <a href="#" class="Cbtn Cbtn-danger">Delete</a>
-                        </div>
-                    </div>
-                </div> 
+          </div>
+          <div class="bottom">
+            <div class="wrapper">
+              <ul class="forecast">
+                <span class="lnr lnr-chevron-up go-up"></span>
+                <li class="active">
+                  <span class="date">Presión</span>
+                  <span class="lnr lnr-sun condition">
+                    <span class="temp"><?php echo round($sensorData['bmp280']['Pressure'], 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
+                  </span>
+                </li>
+                <li class="active">
+                  <span class="date">Altitud</span>
+                  <span class="lnr lnr-cloud condition">
+                    <span class="temp"><?php echo round($sensorData['bmp280']['Alt'], 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
+                  </span>
+                </li>
+              </ul>
             </div>
+          </div>
         </div>
+      </div>
 
-
-<div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="tile">
-                    <div class="wrapper">
-                        <div class="header">Histórico de Temperaturas</div>
-
-                        <div class="banner-img">
-                            <!-- Weather Widget - START -->
-                            <div class="weather">
-                                <canvas id="tempChartDht11" height="200"></canvas>
-                            </div>
-                        </div>
-
-                        <div class="dates">
-                            <div class="start">
-                                <strong>De</strong> <?php echo date('d M Y',strtotime('-30 days')) ?>
-                                <span></span>
-                            </div>
-                            <div class="ends">
-                                <strong>Hasta</strong> <?php echo date('d M Y') ?>
-                            </div>
-                        </div>
-
-                    </div>
-                </div> 
+      <div class="col">
+        <div class="weather-card chart">
+          <div class="top">
+            <div class="wrapper">
+              <canvas id="weatherChart" width="100%"></canvas>
             </div>
-</div>
+          </div>
+          <div class="bottom">
+            <div class="wrapper">
+              <ul class="forecast">
+                <span class="lnr lnr-chevron-up go-up"></span>
+                <li class="active">
+                  <span class="date">Temperatura promedio</span>
+                  <span class="lnr lnr-sun condition">
+                    <span class="temp"><?php echo round(array_sum($this->bmp280GraphData['temp'])/count($this->bmp280GraphData['temp']), 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
+                  </span>
+                </li>
+                <li class="active">
+                  <span class="date">Presión promedio</span>
+                  <span class="lnr lnr-cloud condition">
+                    <span class="temp"><?php echo round(array_sum($this->bmp280GraphData['press'])/count($this->bmp280GraphData['press']), 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php echo JHtml::_('bootstrap.endTab'); ?>
+
+  <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'DS18B20', 'Termómetros'); ?>
+    <div class="row">
+      <div class="col">
+        <div class="weather-card one">
+          <div class="top">
+            <div class="wrapper">
+  <!--
+              <div class="mynav">
+                <a href="javascript:;"><span class="lnr lnr-chevron-left"></span></a>
+                <a href="javascript:;"><span class="lnr lnr-cog"></span></a>
+              </div>
+  -->
+              <h1 class="heading">Termómetro 1</h1>
+              <h3 class="location">vaso de agua</h3>
+              <p class="temp">
+                <span class="temp-value"><?php echo round($sensorData['ds18b20'][0]['Temp'], 2) ?></span>
+                <span class="deg">0</span>
+                <a href="javascript:;"><span class="temp-type">C</span></a>
+              </p>
+            </div>
+          </div>
+          <div class="bottom">
+            <div class="wrapper">
+              <ul class="forecast">
+                <span class="lnr lnr-chevron-up go-up"></span>
+                <li class="active">
+                  <span class="date">Promedio</span>
+                  <span class="lnr lnr-sun condition">
+                    <span class="temp">18<span class="deg">0</span><span class="temp-type">C</span></span>
+                  </span>
+                </li>
+                <li class="active">
+                  <span class="date">mas bajo</span>
+                  <span class="lnr lnr-cloud condition">
+                    <span class="temp">8<span class="deg">0</span><span class="temp-type">C</span></span>
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="weather-card rain">
+          <div class="top">
+            <div class="wrapper">
+  <!--
+              <div class="mynav">
+                <a href="javascript:;"><span class="lnr lnr-chevron-left"></span></a>
+                <a href="javascript:;"><span class="lnr lnr-cog"></span></a>
+              </div>
+  -->
+              <h1 class="heading">Termómetro 2</h1>
+              <h3 class="location">en tierra</h3>
+              <p class="temp">
+                <span class="temp-value"><?php echo round($sensorData['ds18b20'][1]['Temp'], 2) ?></span>
+                <span class="deg">0</span>
+                <a href="javascript:;"><span class="temp-type">C</span></a>
+              </p>
+            </div>
+          </div>
+          <div class="bottom">
+            <div class="wrapper">
+              <ul class="forecast">
+                <span class="lnr lnr-chevron-up go-up"></span>
+                <li class="active">
+                  <span class="date">Promedio</span>
+                  <span class="lnr lnr-sun condition">
+                    <span class="temp">18<span class="deg">0</span><span class="temp-type">C</span></span>
+                  </span>
+                </li>
+                <li class="active">
+                  <span class="date">mas bajo</span>
+                  <span class="lnr lnr-cloud condition">
+                    <span class="temp">8<span class="deg">0</span><span class="temp-type">C</span></span>
+                  </span>
+                </li>
+              </ul> 
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-6">
+        <canvas id="termometro1" width="90%"></canvas>
+      </div>
+      <div class="col-sm-6">
+        <canvas id="termometro2" width="90%"></canvas>
+      </div>
+    </div>
+  <?php echo JHtml::_('bootstrap.endTab'); ?>
+  <?php echo JHtml::_('bootstrap.endTabSet'); ?>
 
 
         <div class="row">
@@ -143,20 +208,22 @@ $sensorValuesArray = json_decode($this->result, true);
         </div>
     </div>
 
+<?php 
 
+ ?>
 <script>
     /**
      * 2 linear charts using 2 different Y axes
      * See https://stackoverflow.com/questions/38085352/how-to-use-two-y-axes-in-chart-js-v2.
      */
-    var ctx = document.getElementById('tempChartDht11');
+    var ctx = document.getElementById('weatherChart');
 
     // Global Options:
     Chart.defaults.global.defaultFontColor = 'black';
     Chart.defaults.global.defaultFontSize = 12;
 
     var data = {
-      labels: [<?php echo implode(',', $this->tempGraphDht11['date']); ?>],
+      labels: [<?php echo implode(',', $this->bmp280GraphData['date']); ?>],
       datasets: [{
           label: "Temperatura",
           fill: false,
@@ -178,10 +245,10 @@ $sensorValuesArray = json_decode($this->result, true);
           pointHitRadius: 10,
           yAxisID: 'A',
           // notice the gap in the data and the spanGaps: true
-          data: [<?php echo implode(',', $this->tempGraphDht11['temp']) ?>],
+          data: [<?php echo implode(',', $this->bmp280GraphData['temp']) ?>],
           spanGaps: true,
         }, {
-          label: "Humedad",
+          label: "Presión",
           fill: false,
           lineTension: 0.1,
           backgroundColor: "rgba(167,105,0,0.4)",
@@ -201,7 +268,7 @@ $sensorValuesArray = json_decode($this->result, true);
           pointHitRadius: 10,
           yAxisID: 'B',
           // notice the gap in the data and the spanGaps: false
-          data: [<?php echo implode(',', $this->tempGraphDht11['humidity']) ?>],
+          data: [<?php echo implode(',', $this->bmp280GraphData['press']) ?>],
           spanGaps: false,
         }
 
@@ -240,96 +307,59 @@ $sensorValuesArray = json_decode($this->result, true);
 </script>
 
 <script>
-    /**
-     * 2 linear charts using 2 different Y axes
-     * See https://stackoverflow.com/questions/38085352/how-to-use-two-y-axes-in-chart-js-v2.
-     */
-    var ctx = document.getElementById('tempChart');
-
-    // Global Options:
-    Chart.defaults.global.defaultFontColor = 'black';
-    Chart.defaults.global.defaultFontSize = 12;
-
-    var data = {
-      labels: [<?php echo implode(',', $this->tempGraphData['date']); ?>],
-      datasets: [{
-          label: "Temperatura",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "rgba(225,0,0,0.4)",
-          borderColor: "red", // The main line color
-          borderCapStyle: 'square',
-          borderDash: [], // try [5, 15] for instance
-          borderDashOffset: 0.0,
-          borderJoinStyle: 'miter',
-          pointBorderColor: "black",
-          pointBackgroundColor: "white",
-          pointBorderWidth: 1,
-          pointHoverRadius: 8,
-          pointHoverBackgroundColor: "yellow",
-          pointHoverBorderColor: "brown",
-          pointHoverBorderWidth: 2,
-          pointRadius: 4,
-          pointHitRadius: 10,
-          yAxisID: 'A',
-          // notice the gap in the data and the spanGaps: true
-          data: [<?php echo implode(',', $this->tempGraphData['temp']) ?>],
-          spanGaps: true,
-        }, {
-          label: "Presión",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "rgba(167,105,0,0.4)",
-          borderColor: "rgb(167, 105, 0)",
-          borderCapStyle: 'butt',
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: 'miter',
-          pointBorderColor: "white",
-          pointBackgroundColor: "black",
-          pointBorderWidth: 1,
-          pointHoverRadius: 8,
-          pointHoverBackgroundColor: "brown",
-          pointHoverBorderColor: "yellow",
-          pointHoverBorderWidth: 2,
-          pointRadius: 4,
-          pointHitRadius: 10,
-          yAxisID: 'B',
-          // notice the gap in the data and the spanGaps: false
-          data: [<?php echo implode(',', $this->tempGraphData['press']) ?>],
-          spanGaps: false,
-        }
-
-      ]
-    };
-
-    // Notice the scaleLabel at the same level as Ticks
-    var options = {
-      scales: {
-                yAxes: [{
-                    id:'A',
-                    type: 'linear',
-                    position: 'left',
-                    }, {
-                    id: 'B',
-                    type: 'linear',
-                    position: 'right',
-                    ticks: {
-                        beginAtZero:false
-                    },
-                    scaleLabel: {
-                         display: false,
-                         labelString: 'Moola',
-                         fontSize: 20 
-                      }
-                }]            
-            }  
-    };
-
-    // Chart declaration:
-    var myBarChart = new Chart(ctx, {
+  var ctx = document.getElementById('termometro1').getContext('2d');
+  var myChart = new Chart(ctx, {
       type: 'line',
-      data: data,
-      options: options
-    });
+      data: {
+          labels: [<?php echo implode(',', $this->termometro1GraphData['date']); ?>],
+          datasets: [{
+              label: 'Termómetro 1',
+              data: [<?php echo implode(',', $this->termometro1GraphData['temp']) ?>],
+              fill: false,
+              borderColor: [
+                  'rgb(75, 192, 192)'
+              ],
+              lineTension: 0.1,              
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              yAxes: [{
+                  ticks: {
+                      beginAtZero: true
+                  }
+              }]
+          }
+      }
+  });
+</script>
+
+<script>
+  var ctx = document.getElementById('termometro2').getContext('2d');
+  var myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: [<?php echo implode(',', $this->termometro2GraphData['date']); ?>],
+          datasets: [{
+              label: 'Termómetro 2',
+              data: [<?php echo implode(',', $this->termometro2GraphData['temp']) ?>],
+              fill: false,
+              borderColor: [
+                  'rgb(75, 192, 192)'
+              ],
+              lineTension: 0.1,              
+              borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              yAxes: [{
+                  ticks: {
+                      beginAtZero: true
+                  }
+              }]
+          }
+      }
+  });
 </script>

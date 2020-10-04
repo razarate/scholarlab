@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS `#__scholarlab_sensor_measurement` (
   `id` bigint NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  `sensor_type` varchar(100) NOT NULL,
   `sensor_id` varchar(100) NOT NULL,
   `data` json NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp,

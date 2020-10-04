@@ -36,12 +36,12 @@
 		to copy FROM in the package to install therefore files copied
 		in this section are copied from /site/ in the package -->
 	<files folder="site">
-		<filename>index.html</filename>
-		<filename>scholarlab.php</filename>
-		<filename>controller.php</filename>
-		<folder>views</folder>
 		<folder>assets</folder>
+		<folder>helpers</folder>
 		<folder>models</folder>
+		<folder>views</folder>
+		<filename>controller.php</filename>
+		<filename>scholarlab.php</filename>
 	</files>
 
 	<administration>

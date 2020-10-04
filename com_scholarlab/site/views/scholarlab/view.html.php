@@ -27,14 +27,16 @@ class ScholarLabViewScholarLab extends JViewLegacy
     function display($tpl = null)
     {
         // Assign data to the view
-        $this->result = self::getAliveData();
-        $this->getThrottledState = self::get_throttled_state();
-        $this->hardware = self::get_hardware_model();
-        $this->tempGraphData = self::getTempGraphData('bmp280', NULL, NULL);
-        $this->tempGraphDht11 = self::getTempGraphDht11('dht11', NULL, NULL);
+        //$this->result = self::getAliveData();
+        //$this->getThrottledState = self::get_throttled_state();
+        //$this->hardware = self::get_hardware_model();
+        $this->bmp280GraphData = self::bmp280GraphData('bmp280', NULL, NULL, NULL);
+        $this->termometro1GraphData = self::ds18b20GraphData('ds18b20', '28-01191ed83f34', NULL, NULL);
+        $this->termometro2GraphData = self::ds18b20GraphData('ds18b20', '28-01191ecb8132', NULL, NULL);
+        //$this->tempGraphDht11 = self::getTempGraphDht11('dht11', NULL, NULL);
 
-        // Assign data to the view
-        //$this->sensorData = $this->get('Sensor');
+        $sensors = array('bmp280', 'ds18b20');
+        $this->sensorData = SensorHelper::getSensorData($sensors);
          
         // Check for errors.
         if (count($errors = $this->get('Errors')))
@@ -43,17 +45,12 @@ class ScholarLabViewScholarLab extends JViewLegacy
 
             return false;
         }
-/*
-JFactory::getApplication()->enqueueMessage( print_r(self::get_ethernet_interface_name(), 1), 'notice');
-JFactory::getApplication()->enqueueMessage( print_r(self::get_wireless_interface_name(), 1), 'notice');
-JFactory::getApplication()->enqueueMessage( print_r(self::unallocated_free_space(), 1), 'notice');
-JFactory::getApplication()->enqueueMessage( print_r(self::get_survey_data(), 1), 'notice');
-*/
+
         // Display the view
         parent::display($tpl);
     }
 
-    function getTempGraphData ($sensorType = NULL, $fromDate = NULL, $toDate = NULL) {
+    function bmp280GraphData ($sensorType = NULL, $fromDate = NULL, $toDate = NULL) {
         // Testing dates
 
         if (is_null($fromDate) || is_null($toDate)) {
@@ -67,7 +64,27 @@ JFactory::getApplication()->enqueueMessage( print_r(self::get_survey_data(), 1),
 
         // Load Temp data from database
         $scholarlab_model = JModelLegacy::getInstance( 'ScholarLab', 'ScholarLabModel', array() );
-        $tempGraphData = $scholarlab_model->tempGraphData($sensorType, $fromDate, $toDate);
+        $tempGraphData = $scholarlab_model->bmp280GraphData($sensorType, $fromDate, $toDate);
+
+        return $tempGraphData;
+
+    }
+
+    function ds18b20GraphData ($sensorType = NULL, $sensorId = NULL, $fromDate = NULL, $toDate = NULL) {
+        // Testing dates
+
+        if (is_null($fromDate) || is_null($toDate)) {
+            $fromDate = date('Y-m-d',strtotime('-30 days'));    //Thirty days before 'now'
+            $toDate = date('Y-m-d');
+        }
+
+        if ($fromDate <= $toDate) {
+
+        }
+
+        // Load Temp data from database
+        $scholarlab_model = JModelLegacy::getInstance( 'ScholarLab', 'ScholarLabModel', array() );
+        $tempGraphData = $scholarlab_model->ds18b20GraphData($sensorType, $sensorId, $fromDate, $toDate);
 
         return $tempGraphData;
 
@@ -93,50 +110,10 @@ JFactory::getApplication()->enqueueMessage( print_r(self::get_survey_data(), 1),
 
     }
     function getAliveData() {
-//      $output = exec('sudo python3 /home/moodlebox/scholarlab/sensorData.py');
-//      $this->result = $output;
-
-        // create curl resource
-        $ch = curl_init();
-
-        // set url
-        curl_setopt($ch, CURLOPT_URL, "moodlebox.home:8080/allData");
-
-        //return the transfer as a string
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        // $output contains the output string
-        $output = curl_exec($ch);
-
-        // close curl resource to free up system resources
-        curl_close($ch);
 
         // Saving all records to populate database
         $scholarlab_model = JModelLegacy::getInstance( 'ScholarLab', 'ScholarLabModel', array() );
         $scholarlab_model->saveSensorData('bmp280', $output);
-
-///////////////////////////////////////////////////////////
-
-// create curl resource
-$ch = curl_init();
-
-// set url
-curl_setopt($ch, CURLOPT_URL, "moodlebox.home:8080/dht11");
-
-//return the transfer as a string
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-// $output contains the output string
-$output = curl_exec($ch);
-
-// close curl resource to free up system resources
-curl_close($ch);
-
-///////////////////////////////////////////////////////////
-
-        // Saving all records to populate database
-        $scholarlab_model->saveSensorData('dht11', $output);
-
 
         return $output;
     }
