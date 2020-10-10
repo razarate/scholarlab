@@ -98,7 +98,7 @@ abstract class SensorHelper extends JHelperContent{
     }
 
     protected function getRestUrl($endPoint) {
-    	$url = 'http://192.168.0.13:8080/' . $endPoint;
+    	$url = 'http://localhost:8080/' . $endPoint;
     	return $url;
 	}
 	
