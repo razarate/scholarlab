@@ -1,25 +1,23 @@
 <?php
-/**
- * @package     Joomla.Administrator
- * @subpackage  com_scholarlab
- *
- * @copyright   Copyright (C) 2005 - 2019 Open Source Matters, Inc. All rights reserved.
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
- */
+ /**
+ * @package Component com_webinaradministrator for Joomla! 3.5+
+ * @version $Id: view.html.php 3.8 2018-05-05 14:26:33Z Piensocial $
+ * @author Piensocial.com
+ * @copyright (C) 2010- Piensocial.com
+ * @license GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
+**/
 
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
 /**
- * HTML View class for the HelloWorld Component
+ * Render room view
  *
- * @since  0.0.1
+ * @since  3.8.0
  */
-class ScholarLabViewCron extends JViewLegacy
-{
+class ScholarLabViewCron extends JViewLegacy {
 
-    function display($tpl = null)
-    {
+	public function display($tpl = null) {
         // Assign data to the view
 
         $sensors = array('bme280', 'ds18b20');
