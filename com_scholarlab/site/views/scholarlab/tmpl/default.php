@@ -19,8 +19,11 @@ $sensorData = $this->sensorData;
 ?>
 <?php echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'datosAmbientales')); ?>
   <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'datosAmbientales', 'Datos ambientales'); ?>
+
+
+
     <div class="row">
-      <div class="col">
+      <div class="col-sm-6">
         <div class="weather-card one">
           <div class="top">
             <div class="wrapper">
@@ -33,7 +36,7 @@ $sensorData = $this->sensorData;
               <h1 class="heading">Datos ambientales</h1>
               <h3 class="location">Xalapa, Veracruz</h3>
               <p class="temp">
-                <span class="temp-value"><?php echo round($sensorData['bmp280']['Temp'], 2) ?></span>
+                <span class="temp-value"><?php echo round($sensorData['bme280']['Temp'], 2) ?></span>
                 <span class="deg">0</span>
                 <a href="javascript:;"><span class="temp-type">C</span></a>
               </p>
@@ -46,13 +49,13 @@ $sensorData = $this->sensorData;
                 <li class="active">
                   <span class="date">Presión</span>
                   <span class="lnr lnr-sun condition">
-                    <span class="temp"><?php echo round($sensorData['bmp280']['Pressure'], 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
+                    <span class="temp"><?php echo round($sensorData['bme280']['Humidity'], 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
                   </span>
                 </li>
                 <li class="active">
                   <span class="date">Altitud</span>
                   <span class="lnr lnr-cloud condition">
-                    <span class="temp"><?php echo round($sensorData['bmp280']['Alt'], 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
+                    <span class="temp"><?php echo round($sensorData['bme280']['Alt'], 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
                   </span>
                 </li>
               </ul>
@@ -61,7 +64,7 @@ $sensorData = $this->sensorData;
         </div>
       </div>
 
-      <div class="col">
+      <div class="col-sm-6">
         <div class="weather-card chart">
           <div class="top">
             <div class="wrapper">
@@ -75,13 +78,13 @@ $sensorData = $this->sensorData;
                 <li class="active">
                   <span class="date">Temperatura promedio</span>
                   <span class="lnr lnr-sun condition">
-                    <span class="temp"><?php echo round(array_sum($this->bmp280GraphData['temp'])/count($this->bmp280GraphData['temp']), 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
+                    <span class="temp"><?php echo round(array_sum($this->bme280GraphData['temp'])/count($this->bme280GraphData['temp']), 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
                   </span>
                 </li>
                 <li class="active">
                   <span class="date">Presión promedio</span>
                   <span class="lnr lnr-cloud condition">
-                    <span class="temp"><?php echo round(array_sum($this->bmp280GraphData['press'])/count($this->bmp280GraphData['press']), 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
+                    <span class="temp"><?php echo round(array_sum($this->bme280GraphData['humidity'])/count($this->bme280GraphData['humidity']), 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
                   </span>
                 </li>
               </ul>
@@ -90,6 +93,10 @@ $sensorData = $this->sensorData;
         </div>
       </div>
     </div>
+
+
+
+
   <?php echo JHtml::_('bootstrap.endTab'); ?>
 
   <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'DS18B20', 'Termómetros'); ?>
@@ -184,6 +191,11 @@ $sensorData = $this->sensorData;
         <canvas id="termometro2" width="90%"></canvas>
       </div>
     </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <canvas id="2termometros" width="90%"></canvas>
+      </div>
+    </div>
   <?php echo JHtml::_('bootstrap.endTab'); ?>
   <?php echo JHtml::_('bootstrap.endTabSet'); ?>
 
@@ -223,7 +235,7 @@ $sensorData = $this->sensorData;
     Chart.defaults.global.defaultFontSize = 12;
 
     var data = {
-      labels: [<?php echo implode(',', $this->bmp280GraphData['date']); ?>],
+      labels: [<?php echo implode(',', $this->bme280GraphData['date']); ?>],
       datasets: [{
           label: "Temperatura",
           fill: false,
@@ -245,7 +257,7 @@ $sensorData = $this->sensorData;
           pointHitRadius: 10,
           yAxisID: 'A',
           // notice the gap in the data and the spanGaps: true
-          data: [<?php echo implode(',', $this->bmp280GraphData['temp']) ?>],
+          data: [<?php echo implode(',', $this->bme280GraphData['temp']) ?>],
           spanGaps: true,
         }, {
           label: "Presión",
@@ -268,7 +280,7 @@ $sensorData = $this->sensorData;
           pointHitRadius: 10,
           yAxisID: 'B',
           // notice the gap in the data and the spanGaps: false
-          data: [<?php echo implode(',', $this->bmp280GraphData['press']) ?>],
+          data: [<?php echo implode(',', $this->bme280GraphData['humidity']) ?>],
           spanGaps: false,
         }
 
@@ -350,6 +362,46 @@ $sensorData = $this->sensorData;
               ],
               lineTension: 0.1,              
               borderWidth: 1
+          }]
+      },
+      options: {
+          scales: {
+              yAxes: [{
+                  ticks: {
+                      beginAtZero: true
+                  }
+              }]
+          }
+      }
+  });
+</script>
+
+<script>
+  var ctx = document.getElementById('2termometros').getContext('2d');
+  var myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: [<?php echo implode(',', $this->termometro2GraphData['date']); ?>],
+          datasets: [
+            {
+              label: 'Termómetro 1',
+              data: [<?php echo implode(',', $this->termometro1GraphData['temp']) ?>],
+              fill: false,
+              borderColor: [
+                  'rgb(75, 192, 192)'
+              ],
+              lineTension: 0.1,              
+              borderWidth: 1
+          },
+          {
+            label: 'Termómetro 2',
+            data: [<?php echo implode(',', $this->termometro2GraphData['temp']) ?>],
+            fill: false,
+            borderColor: [
+                'red'
+            ],
+            lineTension: 0.1,              
+            borderWidth: 1
           }]
       },
       options: {
