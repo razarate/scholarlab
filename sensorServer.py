@@ -1,10 +1,11 @@
-
 import board
 import digitalio
 import busio
 import time
-import adafruit_bmp280
-import adafruit_dht
+import adafruit_bme280
+# import adafruit_bmp280
+# import adafruit_dht
+
 
 # For DS18B20
 import os
@@ -21,7 +22,7 @@ from gpiozero import CPUTemperature
 import cherrypy
 
 # Initial the dht device, with data pin connected to:
-dhtDevice = adafruit_dht.DHT11(board.D4)
+#dhtDevice = adafruit_dht.DHT11(board.D4)
 
 # Create library object using our Bus I2C port
 i2c = busio.I2C(board.SCL, board.SDA)
@@ -32,6 +33,9 @@ w1DeviceFolder = '/sys/bus/w1/devices'
 # Sensor
 def bmp280Sensor():
 	return adafruit_bmp280.Adafruit_BMP280_I2C(i2c)
+
+def bme280Sensor():
+	return adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
 
 def cpuTemp():
 	return CPUTemperature()
@@ -108,6 +112,27 @@ class SensorData(object):
 	def allData(self):
 
 		return "All data goes here!"
+
+	@cherrypy.expose
+	def bme280(self):
+		bme280 = bme280Sensor()
+
+		# change this to match the location's pressure (hPa) at sea level
+		bme280.seaLevelhPa = 1014
+		temp = bme280.temperature
+		humidity = bme280.humidity
+		press = bme280.pressure
+		alt = bme280.altitude
+		# a Python object (dict):
+		bme280Json = {
+		  "Id":1,
+		  "Temp":temp,
+		  "Humidity":humidity,
+		  "Pressure":press,
+		  "Alt":alt
+		}
+
+		return json.dumps(bme280Json)
 
 	@cherrypy.expose
 	def bmp280(self):
