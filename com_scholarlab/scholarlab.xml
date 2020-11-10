@@ -55,12 +55,20 @@
 			<!-- Admin Main File Copy Section -->
 			<filename>index.html</filename>
 			<filename>scholarlab.php</filename>
+			<filename>config.xml</filename>
+			<filename>access.xml</filename>
+			<filename>controller.php</filename>
+
 			<!-- SQL files section -->
 			<folder>sql</folder>
 			<!-- tables files section -->
 			<folder>tables</folder>
 			<!-- models files section -->
 			<folder>models</folder>
+			<!-- views files section -->
+			<folder>views</folder>
+			<!-- controllers files section -->
+			<folder>controllers</folder>
 		</files>
 	</administration>
 
