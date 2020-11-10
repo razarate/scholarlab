@@ -5,7 +5,9 @@ import time
 import adafruit_bme280
 # import adafruit_bmp280
 # import adafruit_dht
-
+from gpiozero import Button, LED
+from signal import pause
+import sys
 
 # For DS18B20
 import os
@@ -20,6 +22,11 @@ import json
 from gpiozero import CPUTemperature
 
 import cherrypy
+
+# Shutdown button
+offGPIO = int(sys.argv[1]) if len(sys.argv) >= 2 else 19
+holdTime = int(sys.argv[2]) if len(sys.argv) >= 3 else 6
+ledGPIO = int(sys.argv[3]) if len(sys.argv) >= 4 else 13
 
 # Initial the dht device, with data pin connected to:
 #dhtDevice = adafruit_dht.DHT11(board.D4)
@@ -102,6 +109,26 @@ def read_temp(deviceCode):
 
 ### DS18B20 END ###
 
+### Shutdown button Start ###
+def when_pressed():
+    # start blinking with 1/2 second rate
+    led.blink(on_time=0.5, off_time=0.5)
+
+def when_released():
+    # be sure to turn the LEDs off if we release early
+    led.off()
+
+def shutdown():
+    os.system("sudo poweroff")
+
+led = LED(ledGPIO)
+btn = Button(offGPIO, hold_time=holdTime)
+btn.when_held = shutdown
+btn.when_pressed = when_pressed
+btn.when_released = when_released
+
+### Shutdown button Start ###
+
 class SensorData(object):
 
 	@cherrypy.expose
@@ -170,7 +197,7 @@ class SensorData(object):
 		for thermometer in thermometers:
 			# Pretty print sensor data
 		    # ds18b20_data[thermometer] = read_temp(thermometer)
-		    ds18b20_data[i] = {
+		    ds18b20_data[thermometer] = {
 		    	"Id":thermometer,
 		    	"Temp":read_temp(thermometer)
 		    }
