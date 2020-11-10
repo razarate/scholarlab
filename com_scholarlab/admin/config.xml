@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<config>
+	<fieldset name="ScholarLabConfig"
+		label="Scholar Lab!"
+		>
+
+		<field name="vpn-url"
+			type="text"
+			label="URL de vpn"
+		/>
+
+		<field
+		    name="termometro1"
+		    type="text"
+		    label="Termómetro 1"
+		/>
+
+		<field
+		    name="termometro2"
+		    type="text"
+		    label="Termómetro 2"
+		/>
+
+		<field
+		    name="termometro3"
+		    type="text"
+		    label="Termómetro 3"
+		/>
+	</fieldset>
+
+</config>
+

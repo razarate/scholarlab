@@ -30,14 +30,17 @@ class ScholarLabViewScholarLab extends JViewLegacy
         //$this->result = self::getAliveData();
         //$this->getThrottledState = self::get_throttled_state();
         //$this->hardware = self::get_hardware_model();
-        $this->bme280GraphData = self::bme280GraphData('bme280', NULL, NULL, NULL);
-        $this->termometro1GraphData = self::ds18b20GraphData('ds18b20', '28-01191ec65209', NULL, NULL);
-        $this->termometro2GraphData = self::ds18b20GraphData('ds18b20', '28-01191ed83c1b', NULL, NULL);
-        //$this->tempGraphDht11 = self::getTempGraphDht11('dht11', NULL, NULL);
 
+        // Get Webinar Administrator configuration params
+        $params = JComponentHelper::getParams('com_scholarlab');
+        
+        $this->bme280GraphData = self::bme280GraphData('bme280', NULL, NULL, NULL);
+        $this->termometro1GraphData = self::ds18b20GraphData('ds18b20', $params->get('termometro1'), NULL, NULL);
+        $this->termometro2GraphData = self::ds18b20GraphData('ds18b20', $params->get('termometro2'), NULL, NULL);
+        //$this->tempGraphDht11 = self::getTempGraphDht11('dht11', NULL, NULL);
         $sensors = array('bme280', 'ds18b20');
         $this->sensorData = SensorHelper::getSensorData($sensors);
-         
+
         // Check for errors.
         if (count($errors = $this->get('Errors')))
         {

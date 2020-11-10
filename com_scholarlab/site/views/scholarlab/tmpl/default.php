@@ -14,7 +14,9 @@ JHtml::_('bootstrap.tooltip');
 
 $sensorData = $this->sensorData;
 
-//JFactory::getApplication()->enqueueMessage( print_r($sensorData, 1), 'notice');
+// Get Webinar Administrator configuration params
+$params = JComponentHelper::getParams('com_scholarlab');
+//JFactory::getApplication()->enqueueMessage( print_r($params, 1) . '<br> ' . $params->get('vpn-url'), 'notice');
 
 ?>
 <?php echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'datosAmbientales')); ?>
@@ -33,7 +35,7 @@ $sensorData = $this->sensorData;
                 <a href="javascript:;"><span class="lnr lnr-cog"></span></a>
               </div>
   -->
-              <h1 class="heading">Datos ambientales</h1>
+              <h1 class="heading">Estado del tiempo</h1>
               <h3 class="location">Xalapa, Veracruz</h3>
               <p class="temp">
                 <span class="temp-value"><?php echo round($sensorData['bme280']['Temp'], 2) ?></span>
@@ -47,15 +49,15 @@ $sensorData = $this->sensorData;
               <ul class="forecast">
                 <span class="lnr lnr-chevron-up go-up"></span>
                 <li class="active">
-                  <span class="date">Presión</span>
-                  <span class="lnr lnr-sun condition">
-                    <span class="temp"><?php echo round($sensorData['bme280']['Humidity'], 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
+                  <span class="date">Humedad</span>
+                  <span class="lnr lnr-drop condition">
+                    <span class="temp"><?php echo round($sensorData['bme280']['Humidity'], 2) ?> %</span><span class="temp-type"></span></span>
                   </span>
                 </li>
                 <li class="active">
                   <span class="date">Altitud</span>
                   <span class="lnr lnr-cloud condition">
-                    <span class="temp"><?php echo round($sensorData['bme280']['Alt'], 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
+                    <span class="temp"><?php echo round($sensorData['bme280']['Alt'], 2) ?><span class="deg"></span><span class="temp-type"></span></span>
                   </span>
                 </li>
               </ul>
@@ -76,14 +78,14 @@ $sensorData = $this->sensorData;
               <ul class="forecast">
                 <span class="lnr lnr-chevron-up go-up"></span>
                 <li class="active">
-                  <span class="date">Temperatura promedio</span>
+                  <span class="date">Temp. promedio</span>
                   <span class="lnr lnr-sun condition">
                     <span class="temp"><?php echo round(array_sum($this->bme280GraphData['temp'])/count($this->bme280GraphData['temp']), 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
                   </span>
                 </li>
                 <li class="active">
-                  <span class="date">Presión promedio</span>
-                  <span class="lnr lnr-cloud condition">
+                  <span class="date">Humedad promedio</span>
+                  <span class="lnr lnr-drop condition">
                     <span class="temp"><?php echo round(array_sum($this->bme280GraphData['humidity'])/count($this->bme280GraphData['humidity']), 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
                   </span>
                 </li>
@@ -94,15 +96,12 @@ $sensorData = $this->sensorData;
       </div>
     </div>
 
-
-
-
   <?php echo JHtml::_('bootstrap.endTab'); ?>
 
   <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'DS18B20', 'Termómetros'); ?>
     <div class="row">
       <div class="col">
-        <div class="weather-card one">
+        <div class="weather-card one" style="height: 510px;">
           <div class="top">
             <div class="wrapper">
   <!--
@@ -112,38 +111,22 @@ $sensorData = $this->sensorData;
               </div>
   -->
               <h1 class="heading">Termómetro 1</h1>
-              <h3 class="location">vaso de agua</h3>
+              <h3 class="location"></h3>
               <p class="temp">
-                <span class="temp-value"><?php echo round($sensorData['ds18b20'][0]['Temp'], 2) ?></span>
+                <span id='temp1' class="temp-value"><?php echo round($sensorData['ds18b20'][$params->get('termometro1')]['Temp'], 2) ?></span>
                 <span class="deg">0</span>
                 <a href="javascript:;"><span class="temp-type">C</span></a>
               </p>
             </div>
           </div>
           <div class="bottom">
-            <div class="wrapper">
-              <ul class="forecast">
-                <span class="lnr lnr-chevron-up go-up"></span>
-                <li class="active">
-                  <span class="date">Promedio</span>
-                  <span class="lnr lnr-sun condition">
-                    <span class="temp">18<span class="deg">0</span><span class="temp-type">C</span></span>
-                  </span>
-                </li>
-                <li class="active">
-                  <span class="date">mas bajo</span>
-                  <span class="lnr lnr-cloud condition">
-                    <span class="temp">8<span class="deg">0</span><span class="temp-type">C</span></span>
-                  </span>
-                </li>
-              </ul>
-            </div>
+            <canvas id="termometro1" width="90%"></canvas>
           </div>
         </div>
       </div>
 
       <div class="col">
-        <div class="weather-card rain">
+        <div class="weather-card rain" style="height: 510px;">
           <div class="top">
             <div class="wrapper">
   <!--
@@ -153,76 +136,56 @@ $sensorData = $this->sensorData;
               </div>
   -->
               <h1 class="heading">Termómetro 2</h1>
-              <h3 class="location">en tierra</h3>
+              <h3 class="location"></h3>
               <p class="temp">
-                <span class="temp-value"><?php echo round($sensorData['ds18b20'][1]['Temp'], 2) ?></span>
+                <span id='temp2' class="temp-value"><?php echo round($sensorData['ds18b20'][$params->get('termometro2')]['Temp'], 2) ?></span>
                 <span class="deg">0</span>
                 <a href="javascript:;"><span class="temp-type">C</span></a>
               </p>
             </div>
           </div>
           <div class="bottom">
-            <div class="wrapper">
-              <ul class="forecast">
-                <span class="lnr lnr-chevron-up go-up"></span>
-                <li class="active">
-                  <span class="date">Promedio</span>
-                  <span class="lnr lnr-sun condition">
-                    <span class="temp">18<span class="deg">0</span><span class="temp-type">C</span></span>
-                  </span>
-                </li>
-                <li class="active">
-                  <span class="date">mas bajo</span>
-                  <span class="lnr lnr-cloud condition">
-                    <span class="temp">8<span class="deg">0</span><span class="temp-type">C</span></span>
-                  </span>
-                </li>
-              </ul> 
-            </div>
+            <canvas id="termometro2" width="90%"></canvas>
           </div>
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-sm-6">
-        <canvas id="termometro1" width="90%"></canvas>
-      </div>
-      <div class="col-sm-6">
-        <canvas id="termometro2" width="90%"></canvas>
-      </div>
-    </div>
+
     <div class="row">
       <div class="col-sm-12">
-        <canvas id="2termometros" width="90%"></canvas>
+        <canvas id="2termometros" width="80%"></canvas>
       </div>
     </div>
   <?php echo JHtml::_('bootstrap.endTab'); ?>
-  <?php echo JHtml::_('bootstrap.endTabSet'); ?>
-
-
-        <div class="row">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="tile">
-                    <div class="wrapper">
-                        <div class="header">Utilizamos las siguientes tecnologías</div>
-                            <div class="dates" style="background-color:#fafafa">
-                                <div class="start">
-                                    <strong><img alt="Raspi" src="<?php echo JURI::base(true) . '/components/com_scholarlab/assets/img/RasPiLogo.png' ?>" style="max-width:100px"/></strong> Raspberry Pi
-                                    <span></span>
-                                </div>
-                                <div class="ends">
-                                    <strong><img alt="Raspi" src="<?php echo JURI::base(true) . '/components/com_scholarlab/assets/img/chartjs-logo.svg' ?>" style="max-width:55px"/></strong> Chart.js
-                                </div>
-                            </div>
-                    </div>
-                </div> 
-            </div>
+<?php 
+if ($params->get('termometro3')) {
+?>
+  <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'DS18B20-3', 'Medidor de temperatura'); ?>
+    <div class="row">
+      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        <div class="thumbnail">
+            <div class="caption">
+              <div class='col-lg-12 well well-add-card'>
+                  <h4>Temperatura</h4>
+              </div>
+              <div class='col-lg-12'>
+                <p class="temp">
+                  <span id='temp3' class="temp-value" style="font-size: 40px;"><?php echo round($sensorData['ds18b20'][$params->get('termometro3')]['Temp'], 2) ?></span>
+                  <span class="temp-type" style="font-size: 40px">°C</span>
+                </p>
+                <p class="text-muted">Fecha: <?php echo date("d-M-Y"); ?></p>
+              </div>
+          </div>
         </div>
+      </div>
+    </div><!-- End container -->
+  <?php echo JHtml::_('bootstrap.endTab'); ?>
+<?php 
+}
+?>
+  <?php echo JHtml::_('bootstrap.endTabSet'); ?>
     </div>
 
-<?php 
-
- ?>
 <script>
     /**
      * 2 linear charts using 2 different Y axes
@@ -235,9 +198,9 @@ $sensorData = $this->sensorData;
     Chart.defaults.global.defaultFontSize = 12;
 
     var data = {
-      labels: [<?php echo implode(',', $this->bme280GraphData['date']); ?>],
-      datasets: [{
-          label: "Temperatura",
+          labels: [<?php echo implode(',', $this->bme280GraphData['date']); ?>],
+          datasets: [{
+              label: "Temperatura",
           fill: false,
           lineTension: 0.1,
           backgroundColor: "rgba(225,0,0,0.4)",
@@ -255,12 +218,11 @@ $sensorData = $this->sensorData;
           pointHoverBorderWidth: 2,
           pointRadius: 4,
           pointHitRadius: 10,
-          yAxisID: 'A',
-          // notice the gap in the data and the spanGaps: true
           data: [<?php echo implode(',', $this->bme280GraphData['temp']) ?>],
           spanGaps: true,
-        }, {
-          label: "Presión",
+          },
+          {
+          label: "Humedad",
           fill: false,
           lineTension: 0.1,
           backgroundColor: "rgba(167,105,0,0.4)",
@@ -278,12 +240,10 @@ $sensorData = $this->sensorData;
           pointHoverBorderWidth: 2,
           pointRadius: 4,
           pointHitRadius: 10,
-          yAxisID: 'B',
           // notice the gap in the data and the spanGaps: false
           data: [<?php echo implode(',', $this->bme280GraphData['humidity']) ?>],
           spanGaps: false,
         }
-
       ]
     };
 
@@ -291,15 +251,8 @@ $sensorData = $this->sensorData;
     var options = {
       scales: {
                 yAxes: [{
-                    id:'A',
-                    type: 'linear',
-                    position: 'left',
-                    }, {
-                    id: 'B',
-                    type: 'linear',
-                    position: 'right',
                     ticks: {
-                        beginAtZero:false
+                        beginAtZero:true
                     },
                     scaleLabel: {
                          display: false,
@@ -405,6 +358,7 @@ $sensorData = $this->sensorData;
           }]
       },
       options: {
+        responsive: true,
           scales: {
               yAxes: [{
                   ticks: {
@@ -414,4 +368,33 @@ $sensorData = $this->sensorData;
           }
       }
   });
+</script>
+ <script type="text/javascript">
+      function loadTemp() {
+          var xmlhttp;
+          if (window.XMLHttpRequest) {
+              xmlhttp = new XMLHttpRequest();
+          }
+          else {// code for IE6, IE5
+              xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+          }
+          xmlhttp.onreadystatechange = function () {
+              if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    // change content from div
+          var resp = JSON.parse(xmlhttp.responseText);
+                  document.getElementById("temp1").innerHTML = parseFloat(resp[0].Temp).toFixed(2);
+                  document.getElementById("temp2").innerHTML = parseFloat(resp[1].Temp).toFixed(2);
+                  if (document.getElementById('temp3')){
+                    document.getElementById("temp3").innerHTML = parseFloat(resp[2].Temp).toFixed(2);
+                  }
+              }
+          }
+          xmlhttp.open("GET", <?php echo '"https://' . $params->get('vpn-url') . '/proxy?sensor=ds18b20"' ?>, true);
+          xmlhttp.send();
+      }
+
+      // first page load
+      loadTemp();
+      setInterval(loadTemp, 5000);
+    
 </script>
