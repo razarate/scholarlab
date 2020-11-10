@@ -41,6 +41,7 @@ Scholar lab
 	cd /home/pi
 	python3 sensorServer.py
 	Agregar al cron iniciar el servidor web
+		crontab -e
 		@reboot python /home/pi/sensorServer.py &
 
 
@@ -54,6 +55,14 @@ Scholar lab
 		    fastcgi_pass unix:/run/php/php7.3-fpm.sock;
 		}
 	Agregar aquí una locación para que funcione la redirección de joomla https://serverfault.com/questions/862219/joomla-at-nginx-remove-slashes-doesnt-work-properly
+		location / {
+	        try_files $uri $uri/ @joomlaurls;
+	    }
+	    location @joomlaurls {
+	        rewrite ^/(.+)/$ /$1 permanent;
+	        try_files $uri $uri/ /index.php?$args;
+	        error_page 404 = /index.php;
+	    }
 	Administrar Nginx
 	# start webserver
 		sudo /etc/init.d/nginx start
@@ -70,7 +79,15 @@ Scholar lab
 3.- Instalar Maria DB
 	sudo apt-get install mariadb-server php-mysql -y
 	sudo mysql_secure_installation
-
+		sudo mysql -uroot -p
+		# database aanmaken
+			CREATE DATABASE database_name;
+		# gebruiker aanmaken
+			CREATE USER 'user_name'@'localhost' IDENTIFIED BY 'password';
+		# gebruiker toevoegen aan database
+			GRANT ALL PRIVILEGES ON database_name.* TO 'user_name'@'localhost';
+		# ververs rechten
+			FLUSH PRIVILEGES;
 4.- Subir archivos joomla
 	Dar permiso a pi para modificar archivos https://dev.to/katieadamsdev/raspberry-pi-index-html-permissions-4d35
 		sudo chown -R pi /var/www/html
@@ -79,13 +96,24 @@ Scholar lab
 		Subir archivos y descomprimir
 		Visitar http://localhost para instalar
 		#Para JoomShaper es necesario instalar otros módulos de php
-	Cron para sensores (*/15 * * * *  wget http://192.168.0.13/index.php/escuela-cron)
+			CURl
+				sudo apt-get install curl
+				sudo apt-get install php-curl
+			MB_string
+				sudo apt-get install php-mbstring
+	Cron para sensores (*/15 * * * *  curl http://192.168.0.13/index.php/escuela-cron)
 
 5.- Instalar phpmyadmin https://pimylifeup.com/raspberry-pi-phpmyadmin/
 	sudo apt install phpmyadmin
+
+	Para Nginx
+	sudo ln -s /usr/share/phpmyadmin /var/www/html
 # start webserver
 sudo /etc/init.d/nginx start
 # stop webserver
 sudo /etc/init.d/nginx stop
 # restart webserver
 sudo /etc/init.d/nginx restart
+
+6.- Instalar Matomo https://matomo.org/docs/installation
+INSTALAR ANALYTICS
