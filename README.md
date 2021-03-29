@@ -88,6 +88,7 @@ Scholar lab
 			GRANT ALL PRIVILEGES ON database_name.* TO 'user_name'@'localhost';
 		# ververs rechten
 			FLUSH PRIVILEGES;
+			quit
 4.- Subir archivos joomla
 	Dar permiso a pi para modificar archivos https://dev.to/katieadamsdev/raspberry-pi-index-html-permissions-4d35
 		sudo chown -R pi /var/www/html
@@ -101,7 +102,9 @@ Scholar lab
 				sudo apt-get install php-curl
 			MB_string
 				sudo apt-get install php-mbstring
-	Cron para sensores (*/15 * * * *  curl http://192.168.0.13/index.php/escuela-cron)
+	Cron para sensores (*/15 * * * *  curl "http://192.168.0.16/index.php?option=com_scholarlab&view=cron&format=raw")
+	Regresar los permisos para la carpeta pública
+		sudo chown -R www-data /var/www/html
 
 5.- Instalar phpmyadmin https://pimylifeup.com/raspberry-pi-phpmyadmin/
 	sudo apt install phpmyadmin
