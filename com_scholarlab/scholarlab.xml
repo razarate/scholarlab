@@ -69,6 +69,8 @@
 			<folder>views</folder>
 			<!-- controllers files section -->
 			<folder>controllers</folder>
+			<!-- helpers files section -->
+			<folder>helpers</folder>
 		</files>
 		<languages folder="admin">
 			<language tag="en-GB">language/en-GB.com_scholarlab.ini</language>
