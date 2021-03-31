@@ -143,6 +143,7 @@ class SensorData(object):
 	@cherrypy.expose
 	def bme280(self):
 		bme280 = bme280Sensor()
+		bme280_data = {}
 
 		# change this to match the location's pressure (hPa) at sea level
 		bme280.seaLevelhPa = 1014
@@ -150,8 +151,10 @@ class SensorData(object):
 		humidity = bme280.humidity
 		press = bme280.pressure
 		alt = bme280.altitude
+		address = '0x76'
+		
 		# a Python object (dict):
-		bme280Json = {
+		bme280_data[address] = {
 		  "Id":1,
 		  "Temp":temp,
 		  "Humidity":humidity,
@@ -159,7 +162,7 @@ class SensorData(object):
 		  "Alt":alt
 		}
 
-		return json.dumps(bme280Json)
+		return json.dumps(bme280_data)
 
 	@cherrypy.expose
 	def bmp280(self):
@@ -171,14 +174,14 @@ class SensorData(object):
 		press = bmp280.pressure
 		alt = bmp280.altitude
 		# a Python object (dict):
-		bmp280Json = {
+		bmp280_data = {
 		  "Id":1,
 		  "Temp":temp,
 		  "Pressure":press,
 		  "Alt":alt
 		}
 
-		return json.dumps(bmp280Json)
+		return json.dumps(bmp280_data)
 
 	@cherrypy.expose
 	def dht11(self):
