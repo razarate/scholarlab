@@ -56,7 +56,7 @@ abstract class SensorHelper extends JHelperContent{
     			switch ($device) {
     				case 'ds18b20':
     					foreach ($sensorData[$device] as $item) {
-    						// Saving all records to populate database
+    						// Saving all records
 					        $scholarlab_model = JModelLegacy::getInstance( 'ScholarLab', 'ScholarLabModel', array() );
 					        $sensor_id = $item['Id'];
 					        unset($item['Id']);
@@ -81,7 +81,7 @@ abstract class SensorHelper extends JHelperContent{
         return ;
     }
 
-    protected function restService($endPoint = 'allData') {
+    public function restService($endPoint = 'allData') {
     	// create curl resource
         $ch = curl_init();
         // set url
