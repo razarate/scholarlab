@@ -70,6 +70,10 @@
 			<!-- controllers files section -->
 			<folder>controllers</folder>
 		</files>
+		<languages folder="admin">
+			<language tag="en-GB">language/en-GB.com_scholarlab.ini</language>
+			<language tag="en-GB">language/en-GB.com_scholarlab.sys.ini</language>
+		</languages>
 	</administration>
 
 </extension>
