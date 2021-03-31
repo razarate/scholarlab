@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
  *
  * @since  0.0.1
  */
-class ScholarLabTableScholarLab extends JTable
+class ScholarlabTableSensor extends JTable
 {
 	/**
 	 * Constructor
@@ -23,6 +23,6 @@ class ScholarLabTableScholarLab extends JTable
 	 */
 	function __construct(&$db)
 	{
-		parent::__construct('#__scholarlab_sensor_measurement', 'id', $db);
+		parent::__construct('#__scholarlab_sensor_details', 'id', $db);
 	}
 }

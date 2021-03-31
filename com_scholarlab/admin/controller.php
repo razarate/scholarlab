@@ -22,7 +22,7 @@ class ScholarlabController extends JControllerLegacy
 	 * @var    string
 	 * @since  1.0.0
 	 */
-	protected $default_view = 'dashboard';
+	protected $default_view = 'sensors';
 
 	/**
 	 * Method to display a view.
@@ -43,11 +43,11 @@ class ScholarlabController extends JControllerLegacy
         $document->addStyleSheet(JUri::base(true) . '/components/com_raspberrypilab/assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css');
 		$document->addStylesheet( JURI::base(true) . '/components/com_raspberrypilab/assets/chartjs/Chart.min.css' );
 		$document->addScript( JURI::base(true) . '/components/com_raspberrypilab/assets/chartjs/Chart.min.js' );
-*/
+
 		$view   = $this->input->get('view', 'dashboard');
 		$layout = $this->input->get('layout', 'default');
-//		$id     = $this->input->getInt('id');
-
+		$id     = $this->input->getInt('id');
+*/
 		return parent::display();
 	}
 }
