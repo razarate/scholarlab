@@ -44,6 +44,28 @@ def bmp280Sensor():
 def bme280Sensor():
 	return adafruit_bme280.Adafruit_BME280_I2C(i2c, 0x76)
 
+def bme280_data_array():
+	bme280 = bme280Sensor()
+	bme280_data = {}
+
+	# change this to match the location's pressure (hPa) at sea level
+	bme280.seaLevelhPa = 1014
+	temp = bme280.temperature
+	humidity = bme280.humidity
+	press = bme280.pressure
+	alt = bme280.altitude
+	address = '0x76'
+	
+	# a Python object (dict):
+	bme280_data[address] = {
+	  "Id":1,
+	  "Temp":temp,
+	  "Humidity":humidity,
+	  "Pressure":press,
+	  "Alt":alt
+	}
+	return bme280_data
+
 def cpuTemp():
 	return CPUTemperature()
 
@@ -107,6 +129,24 @@ def read_temp(deviceCode):
         # Return formatted sensor data
         return temp_c
 
+def ds18b20_data_array():
+	ds18b20_data = {}
+	# Find all connected thermometers
+	thermometers = find_thermometers()
+	i = 0
+
+	# Go through all connected thermometers
+	for thermometer in thermometers:
+		# Pretty print sensor data
+	    # ds18b20_data[thermometer] = read_temp(thermometer)
+	    ds18b20_data[thermometer] = {
+	    	"Id":thermometer,
+	    	"Temp":read_temp(thermometer)
+	    }
+	    i = i+1
+
+	return ds18b20_data
+
 ### DS18B20 END ###
 
 ### Shutdown button Start ###
@@ -137,32 +177,15 @@ class SensorData(object):
 
 	@cherrypy.expose
 	def allData(self):
+		# a Python object (dict):
+		allData = [bme280_data_array(), ds18b20_data_array()]
 
-		return "All data goes here!"
+		return json.dumps(allData)
 
 	@cherrypy.expose
 	def bme280(self):
-		bme280 = bme280Sensor()
-		bme280_data = {}
 
-		# change this to match the location's pressure (hPa) at sea level
-		bme280.seaLevelhPa = 1014
-		temp = bme280.temperature
-		humidity = bme280.humidity
-		press = bme280.pressure
-		alt = bme280.altitude
-		address = '0x76'
-		
-		# a Python object (dict):
-		bme280_data[address] = {
-		  "Id":1,
-		  "Temp":temp,
-		  "Humidity":humidity,
-		  "Pressure":press,
-		  "Alt":alt
-		}
-
-		return json.dumps(bme280_data)
+		return json.dumps(bme280_data_array())
 
 	@cherrypy.expose
 	def bmp280(self):
@@ -191,22 +214,8 @@ class SensorData(object):
 
 	@cherrypy.expose
 	def ds18b20(self):
-		ds18b20_data = {}
-		# Find all connected thermometers
-		thermometers = find_thermometers()
-		i = 0
 
-		# Go through all connected thermometers
-		for thermometer in thermometers:
-			# Pretty print sensor data
-		    # ds18b20_data[thermometer] = read_temp(thermometer)
-		    ds18b20_data[thermometer] = {
-		    	"Id":thermometer,
-		    	"Temp":read_temp(thermometer)
-		    }
-		    i = i+1
-
-		return json.dumps(ds18b20_data)
+		return json.dumps(ds18b20_data_array())
 
 if __name__ == '__main__':
     cherrypy.config.update({'server.socket_host': '0.0.0.0'})
