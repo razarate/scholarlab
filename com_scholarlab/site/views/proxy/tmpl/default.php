@@ -10,8 +10,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted access');
 
-// Get Webinar Administrator configuration params
-$params = JComponentHelper::getParams('com_scholarlab');
+echo "<pre>";
+print_r($this->sensorData);
+echo "</pre>";
 
 ?>
-{"0": {"Temp":<?php echo json_encode($this->sensorData['ds18b20'][$params->get('termometro1')]['Temp']); ?>}, "1": {"Temp":<?php echo json_encode($this->sensorData['ds18b20'][$params->get('termometro2')]['Temp']); ?>}, "2": {"Temp":<?php echo json_encode($this->sensorData['ds18b20'][$params->get('termometro3')]['Temp']); ?>}}

@@ -14,5 +14,9 @@ defined('_JEXEC') or die('Restricted access');
  * @since  0.0.1
  */
 class ScholarLabController extends JControllerLegacy{
-
+	
+	public function devicedata()
+    {
+        parent::display();
+    }
 }

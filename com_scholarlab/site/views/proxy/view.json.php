@@ -17,15 +17,17 @@ defined('_JEXEC') or die('Restricted access');
  */
 class ScholarLabViewProxy extends JViewLegacy {
 
+    /**
+     * This display function returns in json format true or false when opening or closing room
+     */
+
 	public function display($tpl = null) {
-        // Assign data to the view
 
         $input = JFactory::getApplication()->input;
         $device = $input->get('device', '', 'STR');
 
         $this->sensorData = call_user_func_array("array_merge", SensorHelper::getSensorData($device));
-        // Display the view
-        parent::display($tpl);
+        echo new JResponseJson(json_encode($this->sensorData));
     }
 
 }
