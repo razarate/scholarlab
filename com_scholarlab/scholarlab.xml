@@ -44,6 +44,15 @@
 		<filename>scholarlab.php</filename>
 	</files>
 
+	<languages folder="site">
+		<language tag="en-GB">language/en-GB.com_scholarlab.ini</language>
+		<language tag="en-GB">language/en-GB.com_scholarlab.sys.ini</language>
+	</languages>
+	
+	<media  folder="media" destination="com_scholarlab">
+		<folder>js</folder>
+	</media>
+	
 	<administration>
 		<!-- Administration Menu Section -->
 		<menu link='index.php?option=com_scholarlab'>Scholar Lab!</menu>
