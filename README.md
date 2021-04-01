@@ -89,6 +89,8 @@ Scholar lab
 		# ververs rechten
 			FLUSH PRIVILEGES;
 			quit
+	sudo service mysql restart
+	
 4.- Subir archivos joomla
 	Dar permiso a pi para modificar archivos https://dev.to/katieadamsdev/raspberry-pi-index-html-permissions-4d35
 		sudo chown -R pi /var/www/html
