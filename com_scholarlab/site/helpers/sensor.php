@@ -28,9 +28,10 @@ abstract class SensorHelper extends JHelperContent{
      * @var $sensor is an array of sensor type or empty for all sensor.
      * @throws \RuntimeException
      */
+
     public function getSensorData($sensor = array()) {
-    	if (empty($sensor)) {
-    		$sensorData = self::restService('allData');
+    	if (empty($sensor) || $sensor == 'allData') {
+    		$sensorData = json_decode(self::restService('allData'), true);
     	} else {
     		foreach ($sensor as $device) {
     			$sensorData[$device] = json_decode(self::restService($device), true);
@@ -46,7 +47,7 @@ abstract class SensorHelper extends JHelperContent{
      * @var $sensor is an array of sensor type or empty for all sensor.
      * @throws \RuntimeException
      */
-    public function cronSaveSensorData($sensor = array()) {
+/*    public function cronSaveSensorData($sensor = array()) {
     	if (empty($sensor)) {
     		$sensorData = self::restService('allData');
     	} else {
@@ -80,6 +81,7 @@ abstract class SensorHelper extends JHelperContent{
 
         return ;
     }
+*/
 
     public function restService($endPoint = 'allData') {
     	// create curl resource
