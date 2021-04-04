@@ -14,351 +14,362 @@ JHtml::_('bootstrap.tooltip');
 
 $dashboardData = $this->dashboardData;
 
-//JFactory::getApplication()->enqueueMessage('<pre>' . print_r($dashboardData, 1) . '</pre>' , 'notice');
+setlocale(LC_TIME,"es_MX.utf8");
+$time = time();
+$today = strftime('%A, %e de %B de %Y' , $time);
+$hours = date("h:i",$time);
+$am =date("A",$time);
 
+// Weather images
+$h = date('H'); // it will return hour in 24 format.
+if ($h >= 5 && $h < 16) $weatherPic = JURI::base(true).'/components/com_scholarlab/assets/img/weatherMorning.jpg'; //if it's between 5am and 4pm show day strength 1 image
+  else if (($h >= 16 && $h < 21)) $weatherPic = JURI::base(true).'/components/com_scholarlab/assets/img/weather.jpg'; //it's between 4pm and 8pm show evening condition 1 image
+  else if (($h >= 21 && $h <=23 )  || ($h >= 1 && $h <= 4)) $weatherPic = JURI::base(true).'/components/com_scholarlab/assets/img/weatherNight.jpg'; //if it's between 8pm and 4am show rest image
+
+// Project images
+$projectImage1 = JURI::base(true).'/components/com_scholarlab/assets/img/project1.jpg';
+$projectImage2 = JURI::base(true).'/components/com_scholarlab/assets/img/project2.jpg';
+
+//JFactory::getApplication()->enqueueMessage($weatherPic , 'notice');
 ?>
-<?php echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'datosAmbientales')); ?>
-  <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'datosAmbientales', 'Datos ambientales'); ?>
 
+<div class="row">
+  <form class="form-inline" action="<?php echo JURI::current() ?>" method="get">
+    <input type="hidden"
+        name="timeframe"
+        value="<?php echo $this->timeframe ?>">
 
+    <label for="fromDate" class="mr-sm-2">Inicia el:</label>
+    <input type="text" class="form-control mb-2 mr-sm-2"
+        value="<?php echo $this->fromDate ?>"
+        name="fromDate">
 
-    <div class="row">
-      <div class="col-sm-6">
-        <div class="weather-card one">
-          <div class="top">
-            <div class="wrapper">
-  <!--
-              <div class="mynav">
-                <a href="javascript:;"><span class="lnr lnr-chevron-left"></span></a>
-                <a href="javascript:;"><span class="lnr lnr-cog"></span></a>
-              </div>
-  -->
-              <h1 class="heading">Estado del tiempo</h1>
-              <h3 class="location">Xalapa, Veracruz</h3>
-              <p class="temp">
-                <span id='bme280Temp' class="temp-value">0</span>
-                <span class="deg">0</span>
-                <a href="javascript:;"><span class="temp-type">C</span></a>
-              </p>
-            </div>
-          </div>
-          <div class="bottom">
-            <div class="wrapper">
-              <ul class="forecast">
-                <span class="lnr lnr-chevron-up go-up"></span>
-                <li class="active">
-                  <span class="date">Humedad</span>
-                  <span class="lnr lnr-drop condition">
-                    <span id='bme280Humidity' class="temp"> %</span><span class="temp-type"></span></span>
-                  </span>
-                </li>
-                <li class="active">
-                  <span class="date">Altitud</span>
-                  <span class="lnr lnr-cloud condition">
-                    <span id='bme280Alt' class="temp">0<span class="deg"></span><span class="temp-type"></span></span>
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+    <label for="toDate" class="mr-sm-2">Termina el:</label>
+    <input type="text" class="form-control mb-2 mr-sm-2"
+        value="<?php echo $this->toDate ?>"
+        name="toDate">
 
-      <div class="col-sm-6">
-        <div class="weather-card chart">
-          <div class="top">
-            <div class="wrapper">
-              <canvas id="weatherChart" width="100%"></canvas>
+    <button type="submit" class="btn btn-primary mb-2">Cambiar</button>
+
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <a href="<?php echo JURI::current().'?timeframe=hour&fromDate='.$this->fromDate.'&toDate='.$this->toDate ?>"
+         class="btn btn-secondary mx-sm-3 mb-2">
+         Horas
+      </a>
+      <a href="<?php echo JURI::current().'?timeframe=day&fromDate='. $this->fromDate.'&toDate='.$this->toDate ?>"
+         class="btn btn-secondary mx-sm-3 mb-2">
+         Días
+      </a>
+    </div>
+  </form>
+</div>
+
+<?php
+if ($this->partialview === 'weather'){
+?>
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="container-fluid px-1 px-md-4 py-5 mx-auto">
+        <div class="row d-flex justify-content-center px-3">
+            <div class="card border-0" style="background-image:url(<?php echo $weatherPic; ?>)">
+                <h2 class="ml-auto mr-4 mt-3 mb-0">La Joya</h2>
+                <p class="ml-auto mr-4 mb-0 med-font">&#176;C</p>
+                <h1 id='bme280Temp' class="d-flex justify-content-center large-font">0</h1>
+                <p class="time-font mb-0 ml-4 mt-auto"><?php echo $hours ?> <span class="sm-font"><?php echo $am ?></span></p>
+                <p class="ml-4 mb-4"><?php echo $today ?></p>
+                  <div class="card-footer" style="background-color: #fff; color: #000; box-shadow: 0px 8px 16px 4px #9E9E9E; border-radius: 0px 0px 20px 20px;">
+                    <div class="d-flex med-font">
+                      <div class="mr-auto p-2">Humedad %</div>
+                        <div id='bme280Humidity' class="p-2">0</div>
+                    </div>
+                    <div class="d-flex med-font">
+                      <div class="mr-auto p-2">Presión mmHg</div>
+                        <div id="bme280Pressure" class="p-2">0</div>
+                    </div>
+                  </div>
             </div>
-          </div>
-          <div class="bottom">
-            <div class="wrapper">
-              <ul class="forecast">
-                <span class="lnr lnr-chevron-up go-up"></span>
-                <li class="active">
-                  <span class="date">Temp. promedio</span>
-                  <span class="lnr lnr-sun condition">
-                    <span class="temp"><?php echo round(array_sum($dashboardData[4]['temp'])/count($dashboardData[4]['temp']), 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
-                  </span>
-                </li>
-                <li class="active">
-                  <span class="date">Humedad promedio</span>
-                  <span class="lnr lnr-drop condition">
-                    <span class="temp"><?php echo round(array_sum($dashboardData[4]['humidity'])/count($dashboardData[4]['humidity']), 2) ?><span class="deg">0</span><span class="temp-type">C</span></span>
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </div>
         </div>
       </div>
     </div>
-
-  <?php echo JHtml::_('bootstrap.endTab'); ?>
-
-  <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'DS18B20', 'Termómetros'); ?>
-    <div class="row">
-      <div class="col">
-        <div class="weather-card one" style="height: 510px;">
-          <div class="top">
-            <div class="wrapper">
-  <!--
-              <div class="mynav">
-                <a href="javascript:;"><span class="lnr lnr-chevron-left"></span></a>
-                <a href="javascript:;"><span class="lnr lnr-cog"></span></a>
-              </div>
-  -->
-              <h1 class="heading">Termómetro 1</h1>
-              <h3 class="location"></h3>
-              <p class="temp">
-                <span id='ds18b20_1' class="temp-value"><?php echo round($dashboardData[1]['Temp'], 2) ?></span>
-                <span class="deg">0</span>
-                <a href="javascript:;"><span class="temp-type">C</span></a>
-              </p>
+    <div class="col-sm-6">
+      <div class="container-fluid px-1 px-md-4 py-5 mx-auto">
+        <div class="row d-flex justify-content-center px-3">
+            <div class="chart-card border-0">
+                <canvas id="weatherChart" width="100%"></canvas>
+                  <div class="card-footer" style="background-color: #fff; color: #000; box-shadow: 0px 8px 16px 4px #9E9E9E; border-radius: 0px 0px 20px 20px;">
+                    <div class="d-flex med-font">
+                      <div class="mr-auto p-2">Humedad promedio</div>
+                        <div class="p-2"><?php echo round(array_sum(array_column($dashboardData[4], 'humidity'))/count(array_column($dashboardData[4], 'humidity')), 2) ?></div>
+                    </div>
+                    <div class="d-flex med-font">
+                      <div class="mr-auto p-2">Presión promedio</div>
+                        <div class="p-2"><?php echo round(array_sum(array_column($dashboardData[4], 'pressure'))/count(array_column($dashboardData[4], 'pressure')), 2) ?></div>
+                    </div>
+                  </div>
             </div>
-          </div>
-          <div class="bottom">
-            <canvas id="termometro1" width="90%"></canvas>
-          </div>
-        </div>
-      </div>
-
-      <div class="col">
-        <div class="weather-card rain" style="height: 510px;">
-          <div class="top">
-            <div class="wrapper">
-  <!--
-              <div class="mynav">
-                <a href="javascript:;"><span class="lnr lnr-chevron-left"></span></a>
-                <a href="javascript:;"><span class="lnr lnr-cog"></span></a>
-              </div>
-  -->
-              <h1 class="heading">Termómetro 2</h1>
-              <h3 class="location"></h3>
-              <p class="temp">
-                <span id='ds18b20_2' class="temp-value"><?php echo round($dashboardData[2]['Temp'], 2) ?></span>
-                <span class="deg">0</span>
-                <a href="javascript:;"><span class="temp-type">C</span></a>
-              </p>
-            </div>
-          </div>
-          <div class="bottom">
-            <canvas id="termometro2" width="90%"></canvas>
-          </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="row">
-      <div class="col-sm-12">
-        <canvas id="2termometros" width="80%"></canvas>
-      </div>
-    </div>
-  <?php echo JHtml::_('bootstrap.endTab'); ?>
-
-  <?php echo JHtml::_('bootstrap.addTab', 'myTab', 'DS18B20-3', 'Medidor de temperatura'); ?>
-    <div class="row">
-      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
-        <div class="thumbnail">
-            <div class="caption">
-              <div class='col-lg-12 well well-add-card'>
-                  <h4>Temperatura</h4>
-              </div>
-              <div class='col-lg-12'>
-                <p class="temp">
-                  <span id='ds18b20_3' class="temp-value" style="font-size: 40px;"><?php echo round($dashboardData[3]['Temp'], 2) ?></span>
-                  <span class="temp-type" style="font-size: 40px">°C</span>
-                </p>
-                <p class="text-muted">Fecha: <?php echo date("d-M-Y"); ?></p>
-              </div>
-          </div>
-        </div>
-      </div>
-    </div><!-- End container -->
-  <?php echo JHtml::_('bootstrap.endTab'); ?>
-<?php echo JHtml::_('bootstrap.endTabSet'); ?>
-    </div>
-
-<script>
-    /**
-     * 2 linear charts using 2 different Y axes
-     * See https://stackoverflow.com/questions/38085352/how-to-use-two-y-axes-in-chart-js-v2.
-     */
+  <script type="text/javascript">
     var ctx = document.getElementById('weatherChart');
 
-    // Global Options:
-    Chart.defaults.global.defaultFontColor = 'black';
-    Chart.defaults.global.defaultFontSize = 12;
+      var data = {
+            labels: [<?php echo "'" . implode("','", array_column($dashboardData[4], 'date')) . "'"; ?>],
+            datasets: [{
+                label: "Temperatura",
+                fill: false,
+                lineTension: 0.1,
+                backgroundColor: "rgba(225,0,0,0.4)",
+                borderColor: "red", // The main line color
+                borderCapStyle: 'square',
+                borderDash: [], // try [5, 15] for instance
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: "black",
+                pointBackgroundColor: "white",
+                pointBorderWidth: 1,
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: "yellow",
+                pointHoverBorderColor: "brown",
+                pointHoverBorderWidth: 2,
+                pointRadius: 4,
+                pointHitRadius: 10,
+                data: [<?php echo "'" . implode("','", array_column($dashboardData[4], 'temp')) . "'"; ?>],
+                spanGaps: true,
+              },
+              {
+                label: "Humedad",
+                fill: false,
+                lineTension: 0.1,
+                backgroundColor: "rgba(167,105,0,0.4)",
+                borderColor: "rgb(167, 105, 0)",
+                borderCapStyle: 'butt',
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: "white",
+                pointBackgroundColor: "black",
+                pointBorderWidth: 1,
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: "brown",
+                pointHoverBorderColor: "yellow",
+                pointHoverBorderWidth: 2,
+                pointRadius: 4,
+                pointHitRadius: 10,
+                // notice the gap in the data and the spanGaps: false
+                data: [<?php echo "'" . implode("','", array_column($dashboardData[4], 'humidity')) . "'"; ?>],
+                spanGaps: false,
+              }
+          ]
+      };
 
-    var data = {
-          labels: [<?php echo implode(',', $dashboardData[4]['date']); ?>],
-          datasets: [{
-              label: "Temperatura",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "rgba(225,0,0,0.4)",
-          borderColor: "red", // The main line color
-          borderCapStyle: 'square',
-          borderDash: [], // try [5, 15] for instance
-          borderDashOffset: 0.0,
-          borderJoinStyle: 'miter',
-          pointBorderColor: "black",
-          pointBackgroundColor: "white",
-          pointBorderWidth: 1,
-          pointHoverRadius: 8,
-          pointHoverBackgroundColor: "yellow",
-          pointHoverBorderColor: "brown",
-          pointHoverBorderWidth: 2,
-          pointRadius: 4,
-          pointHitRadius: 10,
-          data: [<?php echo implode(',', $dashboardData[4]['temp']) ?>],
-          spanGaps: true,
-          },
-          {
-          label: "Humedad",
-          fill: false,
-          lineTension: 0.1,
-          backgroundColor: "rgba(167,105,0,0.4)",
-          borderColor: "rgb(167, 105, 0)",
-          borderCapStyle: 'butt',
-          borderDash: [],
-          borderDashOffset: 0.0,
-          borderJoinStyle: 'miter',
-          pointBorderColor: "white",
-          pointBackgroundColor: "black",
-          pointBorderWidth: 1,
-          pointHoverRadius: 8,
-          pointHoverBackgroundColor: "brown",
-          pointHoverBorderColor: "yellow",
-          pointHoverBorderWidth: 2,
-          pointRadius: 4,
-          pointHitRadius: 10,
-          // notice the gap in the data and the spanGaps: false
-          data: [<?php echo implode(',', $dashboardData[4]['humidity']) ?>],
-          spanGaps: false,
-        }
-      ]
-    };
+      // Notice the scaleLabel at the same level as Ticks
+      var options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+                  yAxes: [{
+                      ticks: {
+                          beginAtZero:true
+                      },
+                      scaleLabel: {
+                           display: false,
+                           labelString: 'Moola',
+                           fontSize: 20 
+                        }
+                  }]            
+              }  
+      };
 
-    // Notice the scaleLabel at the same level as Ticks
-    var options = {
-      scales: {
+      // Chart declaration:
+      var myBarChart = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: options
+      });
+  </script>
+
+<?php
+}
+?>
+
+<?php
+if ($this->partialview === 'project'){
+?>
+
+  <div class="row">
+     <div class="col-sm-6">
+        <div class="container-fluid px-1 px-md-4 py-5 mx-auto">
+           <div class="row d-flex justify-content-center px-3">
+              <div class="card border-0" style="background-image:url(<?php echo $projectImage1; ?>)">
+                 <h2 class="ml-auto mr-4 mt-3 mb-0">Termómetro 1</h2>
+                 <p class="ml-auto mr-4 mb-0 med-font">&#176;C</p>
+                 <h1 id='ds18b20_1' class="d-flex justify-content-center large-font">0</h1>
+                 <p class="time-font mb-0 ml-4 mt-auto"><?php echo $hours ?> <span class="sm-font"><?php echo $am ?></span></p>
+                 <p class="ml-4 mb-4"><?php echo $today ?></p>
+                 <div class="card-footer" style="background-color: #fff; color: #000; box-shadow: 0px 8px 16px 4px #9E9E9E; border-radius: 0px 0px 20px 20px;">
+                    <canvas id="termometro1" width="90%"></canvas>
+                 </div>
+              </div>
+           </div>
+        </div>
+     </div>
+     <div class="col-sm-6">
+        <div class="container-fluid px-1 px-md-4 py-5 mx-auto">
+           <div class="row d-flex justify-content-center px-3">
+              <div class="card border-0" style="background-image:url(<?php echo $projectImage2; ?>)">
+                 <h2 class="ml-auto mr-4 mt-3 mb-0">Termómetro 2</h2>
+                 <p class="ml-auto mr-4 mb-0 med-font">&#176;C</p>
+                 <h1 id='ds18b20_2' class="d-flex justify-content-center large-font">0</h1>
+                 <p class="time-font mb-0 ml-4 mt-auto"><?php echo $hours ?> <span class="sm-font"><?php echo $am ?></span></p>
+                 <p class="ml-4 mb-4"><?php echo $today ?></p>
+                 <div class="card-footer" style="background-color: #fff; color: #000; box-shadow: 0px 8px 16px 4px #9E9E9E; border-radius: 0px 0px 20px 20px;">
+                    <canvas id="termometro2" width="90%"></canvas>
+                 </div>
+              </div>
+           </div>
+        </div>
+     </div>
+  </div>
+  <div class="row">
+     <div class="col-sm-12">
+        <div class="container-fluid px-1 px-md-4 py-5 mx-auto">
+           <div class="row d-flex justify-content-center px-3">
+              <div class="big-chart-card border-0">
+                 <canvas id="2termometros" width="80%"></canvas>
+              </div>
+           </div>
+        </div>
+     </div>
+  </div>
+
+  <script>
+    var ctx = document.getElementById('termometro1').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [<?php echo "'" . implode("','", array_column($dashboardData[1], 'date')) . "'"; ?>],
+            datasets: [{
+                label: 'Termómetro 1',
+                data: [<?php echo implode(',', array_column($dashboardData[1], 'temp')) ?>],
+                fill: false,
+                borderColor: [
+                    'rgb(75, 192, 192)'
+                ],
+                lineTension: 0.1,              
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
                 yAxes: [{
                     ticks: {
-                        beginAtZero:true
-                    },
-                    scaleLabel: {
-                         display: false,
-                         labelString: 'Moola',
-                         fontSize: 20 
-                      }
-                }]            
-            }  
-    };
-
-    // Chart declaration:
-    var myBarChart = new Chart(ctx, {
-      type: 'line',
-      data: data,
-      options: options
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
     });
-</script>
+  </script>
 
-<script>
-  var ctx = document.getElementById('termometro1').getContext('2d');
-  var myChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-          labels: [<?php echo implode(',', $dashboardData[1]['date']); ?>],
-          datasets: [{
-              label: 'Termómetro 1',
-              data: [<?php echo implode(',', $dashboardData[1]['temp']) ?>],
-              fill: false,
-              borderColor: [
-                  'rgb(75, 192, 192)'
-              ],
-              lineTension: 0.1,              
-              borderWidth: 1
-          }]
-      },
-      options: {
-          scales: {
-              yAxes: [{
-                  ticks: {
-                      beginAtZero: true
-                  }
-              }]
-          }
-      }
-  });
-</script>
+  <script>
+    var ctx = document.getElementById('termometro2').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [<?php echo "'" . implode("','", array_column($dashboardData[2], 'date')) . "'"; ?>],
+            datasets: [{
+                label: 'Termómetro 2',
+                data: [<?php echo implode(',', array_column($dashboardData[1], 'temp')) ?>],
+                fill: false,
+                borderColor: [
+                    'rgb(75, 192, 192)'
+                ],
+                lineTension: 0.1,              
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+  </script>
 
-<script>
-  var ctx = document.getElementById('termometro2').getContext('2d');
-  var myChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-          labels: [<?php echo implode(',', $dashboardData[2]['date']); ?>],
-          datasets: [{
-              label: 'Termómetro 2',
-              data: [<?php echo implode(',', $dashboardData[2]['temp']) ?>],
-              fill: false,
-              borderColor: [
-                  'rgb(75, 192, 192)'
-              ],
-              lineTension: 0.1,              
-              borderWidth: 1
-          }]
-      },
-      options: {
-          scales: {
-              yAxes: [{
-                  ticks: {
-                      beginAtZero: true
-                  }
-              }]
-          }
-      }
-  });
-</script>
-
-<script>
-  var ctx = document.getElementById('2termometros').getContext('2d');
-  var myChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-          labels: [<?php echo implode(',', $dashboardData[1]['date']); ?>],
-          datasets: [
+  <script>
+    var ctx = document.getElementById('2termometros').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [<?php echo "'" . implode("','", array_column($dashboardData[1], 'date')) . "'"; ?>],
+            datasets: [
+              {
+                label: 'Termómetro 1',
+                data: [<?php echo implode(',', array_column($dashboardData[1], 'temp')) ?>],
+                fill: false,
+                borderColor: [
+                    'rgb(75, 192, 192)'
+                ],
+                lineTension: 0.1,              
+                borderWidth: 1
+            },
             {
-              label: 'Termómetro 1',
-              data: [<?php echo implode(',', $dashboardData[1]['temp']) ?>],
+              label: 'Termómetro 2',
+              data: [<?php echo implode(',', array_column($dashboardData[2], 'temp')) ?>],
               fill: false,
               borderColor: [
-                  'rgb(75, 192, 192)'
+                  'red'
               ],
               lineTension: 0.1,              
               borderWidth: 1
-          },
-          {
-            label: 'Termómetro 2',
-            data: [<?php echo implode(',', $dashboardData[2]['temp']) ?>],
-            fill: false,
-            borderColor: [
-                'red'
-            ],
-            lineTension: 0.1,              
-            borderWidth: 1
-          }]
-      },
-      options: {
-        responsive: true,
-          scales: {
-              yAxes: [{
-                  ticks: {
-                      beginAtZero: true
-                  }
-              }]
-          }
-      }
-  });
-</script>
+            }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          responsive: true,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+  </script>
+<?php
+}
+?>
+
+<?php
+if ($this->partialview === 'thermometer'){
+?>
+  <div class="row">
+    <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+      <div class="thumbnail">
+          <div class="caption">
+            <div class='col-lg-12 well well-add-card'>
+                <h4>Temperatura</h4>
+            </div>
+            <div class='col-lg-12'>
+              <p class="temp">
+                <span id='ds18b20_3' class="temp-value" style="font-size: 40px;"><?php echo round($dashboardData[3]['Temp'], 2) ?></span>
+                <span class="temp-type" style="font-size: 40px">°C</span>
+              </p>
+              <p class="text-muted">Fecha: <?php echo date("d-M-Y"); ?></p>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<?php
+}
+?>

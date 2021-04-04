@@ -3,4 +3,18 @@
 	<layout title="COM_SCHOLARLAB_SENSORS_VIEW_TITLE">
 		<message>COM_SCHOLARLAB_SENSORS_VIEW_DESC</message>
 	</layout>
+	<fields name="request">
+		<fieldset name="request">
+			<field
+				name="partialview"
+				type="list"
+				label="COM_SCHOLARLAB_SENSORS_VIEW_DEFAULT"
+				description="COM_SCHOLARLAB_SENSORS_VIEW_DEFAULT_DESC"
+				default="1">
+                            <option value="weather">COM_SCHOLARLAB_SENSORS_WEATHER_VIEW</option>
+                            <option value="project">COM_SCHOLARLAB_SENSORS_WEATHER_PROJECT</option>
+                            <option value="thermometer">COM_SCHOLARLAB_SENSORS_WEATHER_THERMOMETER</option>
+                    </field>
+		</fieldset>
+	</fields>
 </metadata>

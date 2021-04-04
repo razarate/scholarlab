@@ -26,8 +26,18 @@ class ScholarLabViewSensors extends JViewLegacy {
     public function display($tpl = null) {
         // Assign data to the view
 
-        $device_id = array(1,2,4);
-        $this->dashboardData = self::dashboardData($device_id);
+        $this->input = JFactory::getApplication()->input;
+        $this->partialview = $this->input->get('partialview', 'weather', 'STRING');
+
+        if ($this->partialview === 'weather') {
+            $device_id = array(4);
+        } elseif ($this->partialview === 'project') {
+            $device_id = array(1,2);
+        }
+
+        if ($device_id) {
+            $this->dashboardData = self::dashboardData($device_id);
+        }
 
         // Check for errors.
         if (count($errors = $this->get('Errors')))

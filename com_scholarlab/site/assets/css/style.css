@@ -159,3 +159,51 @@ body {
   background-size: cover;
   background-position: center center;
 }
+
+.card {
+    background-size: cover;
+    width: 600px;
+    height: 300px;
+    border-radius: 20px 20px 0px 0px;
+    box-shadow: 0px 8px 16px 4px #9E9E9E;
+    margin-top: 50px;
+    margin-bottom: 100px;
+    background-color: #CFD8DC;
+    color: #fff;
+}
+
+.chart-card {
+    width: 600px;
+    height: 300px;
+    border-radius: 20px 20px 0px 0px;
+    box-shadow: 0px 8px 16px 4px #9E9E9E;
+    margin-top: 50px;
+    margin-bottom: 100px;
+    background-color: #CFD8DC;
+    color: #fff;
+}
+.big-chart-card {
+    width: 100%;
+    height: 300px;
+    border-radius: 20px 20px 0px 0px;
+    box-shadow: 0px 8px 16px 4px #9E9E9E;
+    margin-top: 100px;
+    margin-bottom: 50px;
+    background-color: #CFD8DC;
+    color: #fff;
+}
+.time-font {
+    font-size: 50px
+}
+
+.sm-font {
+    font-size: 18px
+}
+
+.med-font {
+    font-size: 28px
+}
+
+.large-font {
+    font-size: 60px
+}
