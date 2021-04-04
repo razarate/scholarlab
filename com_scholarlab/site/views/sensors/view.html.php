@@ -91,4 +91,19 @@ class ScholarLabViewSensors extends JViewLegacy {
 
     }
 
+    protected function setDefaultDates($timeframe){
+        if ($timeframe === 'hour') {
+            $this->fromDate = date('Y-m-d', strtotime("-2 days"));
+            $this->toDate = date('Y-m-d', time());
+        } elseif ($timeframe === 'day') {
+            $this->fromDate = date('Y-m-d', strtotime("-14 days"));
+            $this->toDate = date('Y-m-d', time());
+        }
+    }
+
+    protected function validateDate($date, $format = 'Y-m-d'){
+        $d = DateTime::createFromFormat($format, $date);
+        
+        return $d && $d->format($format) === $date;
+    }
 }
