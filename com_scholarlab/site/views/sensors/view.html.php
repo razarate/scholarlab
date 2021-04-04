@@ -45,33 +45,38 @@ class ScholarLabViewSensors extends JViewLegacy {
     }
 
     protected function dashboardData($device_id = array()) {
-        $input = JFactory::getApplication()->input;
-        $time_frame = $input->get('timeframe', 'hour', 'STR');
+        $this->timeframe = $this->input->get('timeframe', 'day', 'STRING');
+        $this->fromDate   = $this->input->get('fromDate', '', 'STRING');
+        $this->toDate     = $this->input->get('toDate', '', 'STRING');
 
-        if ($time_frame == 'hour') {
-            $fromDate = date('Y-m-d', strtotime("-2 days"));
-            $toDate = date('Y-m-d', time());
-
+        if (($this->fromDate === '') || ($this->toDate === '')) {
+            self::setDefaultDates($this->timeframe);
         } else {
-            $fromDate = date('Y-m-d', strtotime("-14 days"));
-            $toDate = date('Y-m-d', time());
+            if (!self::validateDate($this->fromDate) || !self::validateDate($this->toDate)) {
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_SCHOLARLAB_SENSORS_VIEW_INVALID_DATES_ERROR'), 'error');
+                self::setDefaultDates($this->timeframe);
+            } elseif ($this->fromDate > $this->toDate) {
+                JFactory::getApplication()->enqueueMessage(JText::_('COM_SCHOLARLAB_SENSORS_VIEW_DATES_SET_ERROR'), 'error');
+                self::setDefaultDates($this->timeframe);
+            }
+
         }
 
         foreach ($device_id as $device) {
-            $dashboardData[$device] = self::sensorChartData($device, $fromDate, $toDate);
+            $dashboardData[$device] = self::sensorChartData($device, $this->fromDate, $this->toDate, $this->timeframe);
         }
 
         return $dashboardData;
     }
 
-    protected function sensorChartData($sensorid = NULL, $fromDate = NULL, $toDate = NULL) {
+    protected function sensorChartData($sensorid = NULL, $fromDate = NULL, $toDate = NULL, $timeframe = 'day') {
 
         // Load Temp data from database
         $sensor_model = JModelLegacy::getInstance( 'Sensor', 'ScholarLabModel', array() );
 
-        $tempGraphData = $sensor_model->getSensorReadings($sensorid, $fromDate, $toDate);
+        $sensorReadings = $sensor_model->getSensorReadings($sensorid, $fromDate, $toDate, $timeframe);
 
-        return $tempGraphData;
+        return $sensorReadings;
 
     }
 
