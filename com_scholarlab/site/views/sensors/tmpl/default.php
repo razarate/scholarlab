@@ -74,17 +74,23 @@ if ($this->partialview === 'weather'){
             <div class="card border-0" style="background-image:url(<?php echo $weatherPic; ?>)">
                 <h2 class="ml-auto mr-4 mt-3 mb-0">La Joya</h2>
                 <p class="ml-auto mr-4 mb-0 med-font">&#176;C</p>
-                <h1 id='bme280Temp' class="d-flex justify-content-center large-font">0</h1>
+                <h1 id='bme280Temp' class="d-flex justify-content-center large-font">
+                  <img src="<?php echo $loading ?>" width="72" height="72">
+                </h1>
                 <p class="time-font mb-0 ml-4 mt-auto"><?php echo $hours ?> <span class="sm-font"><?php echo $am ?></span></p>
                 <p class="ml-4 mb-4"><?php echo $today ?></p>
                   <div class="card-footer" style="background-color: #fff; color: #000; box-shadow: 0px 8px 16px 4px #9E9E9E; border-radius: 0px 0px 20px 20px;">
                     <div class="d-flex med-font">
                       <div class="mr-auto p-2">Humedad %</div>
-                        <div id='bme280Humidity' class="p-2">0</div>
+                        <div id='bme280Humidity' class="p-2">
+                          <img src="<?php echo $loading ?>" width="40" height="40">
+                        </div>
                     </div>
                     <div class="d-flex med-font">
                       <div class="mr-auto p-2">Presión mmHg</div>
-                        <div id="bme280Pressure" class="p-2">0</div>
+                        <div id="bme280Pressure" class="p-2">
+                          <img src="<?php echo $loading ?>" width="40" height="40">
+                        </div>
                     </div>
                   </div>
             </div>
@@ -191,7 +197,9 @@ if ($this->partialview === 'project'){
               <div class="card border-0" style="background-image:url(<?php echo $projectImage1; ?>)">
                  <h2 class="ml-auto mr-4 mt-3 mb-0">Termómetro 1</h2>
                  <p class="ml-auto mr-4 mb-0 med-font">&#176;C</p>
-                 <h1 id='ds18b20_1' class="d-flex justify-content-center large-font">0</h1>
+                 <h1 id='ds18b20_1' class="d-flex justify-content-center large-font">
+                  <img src="<?php echo $loading ?>" width="72" height="72">
+                 </h1>
                  <p class="time-font mb-0 ml-4 mt-auto"><?php echo $hours ?> <span class="sm-font"><?php echo $am ?></span></p>
                  <p class="ml-4 mb-4"><?php echo $today ?></p>
                  <div class="card-footer" style="background-color: #CFD8DC; color: #000; box-shadow: 0px 8px 16px 4px #9E9E9E; border-radius: 0px 0px 20px 20px;">
@@ -207,7 +215,9 @@ if ($this->partialview === 'project'){
               <div class="card border-0" style="background-image:url(<?php echo $projectImage2; ?>)">
                  <h2 class="ml-auto mr-4 mt-3 mb-0">Termómetro 2</h2>
                  <p class="ml-auto mr-4 mb-0 med-font">&#176;C</p>
-                 <h1 id='ds18b20_2' class="d-flex justify-content-center large-font">0</h1>
+                 <h1 id='ds18b20_2' class="d-flex justify-content-center large-font">
+                  <img src="<?php echo $loading ?>" width="72" height="72">
+                 </h1>
                  <p class="time-font mb-0 ml-4 mt-auto"><?php echo $hours ?> <span class="sm-font"><?php echo $am ?></span></p>
                  <p class="ml-4 mb-4"><?php echo $today ?></p>
                  <div class="card-footer" style="background-color: #CFD8DC; color: #000; box-shadow: 0px 8px 16px 4px #9E9E9E; border-radius: 0px 0px 20px 20px;">
@@ -390,12 +400,10 @@ if ($this->partialview === 'thermometer'){
             <div class='col-lg-12 well well-add-card'>
                 <h4>Temperatura</h4>
             </div>
-            <div class='col-lg-12'>
-              <p class="temp">
-                <span id='ds18b20_3' class="temp-value" style="font-size: 40px;"><?php echo round($dashboardData[3]['Temp'], 2) ?></span>
-                <span class="temp-type" style="font-size: 40px">°C</span>
-              </p>
-              <p class="text-muted">Fecha: <?php echo date("d-M-Y"); ?></p>
+
+            <div class="d-flex flex-row" style="font-size: 40px">
+              <div id='ds18b20_3' class="p-2"><img src="<?php echo $loading ?>" width="40" height="40"></div>
+              <div class="p-2"><span>°C</span></div>
             </div>
         </div>
       </div>
