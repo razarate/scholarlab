@@ -30,39 +30,46 @@ if ($h >= 5 && $h < 16) $weatherPic = JURI::base(true).'/components/com_scholarl
 $projectImage1 = JURI::base(true).'/components/com_scholarlab/assets/img/project1.jpg';
 $projectImage2 = JURI::base(true).'/components/com_scholarlab/assets/img/project2.jpg';
 
+// Loading image
+$loading = JURI::base(true).'/components/com_scholarlab/assets/img/loading.gif';
+
 //JFactory::getApplication()->enqueueMessage($h , 'notice');
 ?>
 
-<div class="row">
-  <form class="form-inline" action="<?php echo JURI::current() ?>" method="get">
-    <input type="hidden"
-        name="timeframe"
-        value="<?php echo $this->timeframe ?>">
+<?php if ($this->partialview !== 'thermometer'){ ?>
+  <div class="row">
+    <form class="form-inline" action="<?php echo JURI::current() ?>" method="get">
+      <input type="hidden"
+          name="timeframe"
+          value="<?php echo $this->timeframe ?>">
 
-    <label for="fromDate" class="mr-sm-2">Inicia el:</label>
-    <input type="text" class="form-control mb-2 mr-sm-2"
-        value="<?php echo $this->fromDate ?>"
-        name="fromDate">
+      <label for="fromDate" class="mr-sm-2">Inicia el:</label>
+      <input type="text" class="form-control mb-2 mr-sm-2"
+          value="<?php echo $this->fromDate ?>"
+          name="fromDate">
 
-    <label for="toDate" class="mr-sm-2">Termina el:</label>
-    <input type="text" class="form-control mb-2 mr-sm-2"
-        value="<?php echo $this->toDate ?>"
-        name="toDate">
+      <label for="toDate" class="mr-sm-2">Termina el:</label>
+      <input type="text" class="form-control mb-2 mr-sm-2"
+          value="<?php echo $this->toDate ?>"
+          name="toDate">
 
-    <button type="submit" class="btn btn-primary mb-2">Cambiar</button>
+      <button type="submit" class="btn btn-primary mb-2">Cambiar</button>
 
-    <div class="btn-group" role="group" aria-label="Basic example">
-      <a href="<?php echo JURI::current().'?timeframe=hour&fromDate='.$this->fromDate.'&toDate='.$this->toDate ?>"
-         class="btn btn-secondary mx-sm-3 mb-2">
-         Horas
-      </a>
-      <a href="<?php echo JURI::current().'?timeframe=day&fromDate='. $this->fromDate.'&toDate='.$this->toDate ?>"
-         class="btn btn-secondary mx-sm-3 mb-2">
-         Días
-      </a>
-    </div>
-  </form>
-</div>
+      <div class="btn-group" role="group" aria-label="Basic example">
+        <a href="<?php echo JURI::current().'?timeframe=hour&fromDate='.$this->fromDate.'&toDate='.$this->toDate ?>"
+           class="btn btn-secondary mx-sm-3 mb-2">
+           Horas
+        </a>
+        <a href="<?php echo JURI::current().'?timeframe=day&fromDate='. $this->fromDate.'&toDate='.$this->toDate ?>"
+           class="btn btn-secondary mx-sm-3 mb-2">
+           Días
+        </a>
+      </div>
+    </form>
+  </div>
+<?php
+}
+?>
 
 <?php
 if ($this->partialview === 'weather'){
