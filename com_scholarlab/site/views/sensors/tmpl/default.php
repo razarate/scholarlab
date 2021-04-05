@@ -24,13 +24,13 @@ $am =date("A",$time);
 $h = date('H'); // it will return hour in 24 format.
 if ($h >= 5 && $h < 16) $weatherPic = JURI::base(true).'/components/com_scholarlab/assets/img/weatherMorning.jpg'; //if it's between 5am and 4pm show day strength 1 image
   else if (($h >= 16 && $h < 21)) $weatherPic = JURI::base(true).'/components/com_scholarlab/assets/img/weather.jpg'; //it's between 4pm and 8pm show evening condition 1 image
-  else if (($h >= 21 && $h <=23 )  || ($h >= 1 && $h <= 4)) $weatherPic = JURI::base(true).'/components/com_scholarlab/assets/img/weatherNight.jpg'; //if it's between 8pm and 4am show rest image
+  else if (($h >= 21 && $h <=23 )  || ($h >= 0 && $h <= 4)) $weatherPic = JURI::base(true).'/components/com_scholarlab/assets/img/weatherNight.jpg'; //if it's between 8pm and 4am show rest image
 
 // Project images
 $projectImage1 = JURI::base(true).'/components/com_scholarlab/assets/img/project1.jpg';
 $projectImage2 = JURI::base(true).'/components/com_scholarlab/assets/img/project2.jpg';
 
-//JFactory::getApplication()->enqueueMessage($weatherPic , 'notice');
+//JFactory::getApplication()->enqueueMessage($h , 'notice');
 ?>
 
 <div class="row">
@@ -111,84 +111,69 @@ if ($this->partialview === 'weather'){
       </div>
     </div>
   </div>
-
   <script type="text/javascript">
     var ctx = document.getElementById('weatherChart');
 
-      var data = {
-            labels: [<?php echo "'" . implode("','", array_column($dashboardData[4], 'date')) . "'"; ?>],
+    var options = {
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+
+    var data = {
+            labels: <?php echo json_encode(array_column($dashboardData[4], 'date')) ?>,
             datasets: [{
-                label: "Temperatura",
-                fill: false,
-                lineTension: 0.1,
-                backgroundColor: "rgba(225,0,0,0.4)",
-                borderColor: "red", // The main line color
-                borderCapStyle: 'square',
-                borderDash: [], // try [5, 15] for instance
-                borderDashOffset: 0.0,
-                borderJoinStyle: 'miter',
+                label: 'Temperatura',
+                data: <?php echo json_encode(array_column($dashboardData[4], 'temp')) ?>,
+                backgroundColor: [
+                    'rgba(204, 0, 0, 1)'
+                ],
+                borderColor: [
+                    'rgba(255, 0, 0, 1)'
+                ],
+                borderWidth: 2,
                 pointBorderColor: "black",
-                pointBackgroundColor: "white",
+                pointBackgroundColor: "black",
                 pointBorderWidth: 1,
                 pointHoverRadius: 8,
                 pointHoverBackgroundColor: "yellow",
                 pointHoverBorderColor: "brown",
                 pointHoverBorderWidth: 2,
-                pointRadius: 4,
-                pointHitRadius: 10,
-                data: [<?php echo "'" . implode("','", array_column($dashboardData[4], 'temp')) . "'"; ?>],
-                spanGaps: true,
-              },
-              {
-                label: "Humedad",
-                fill: false,
-                lineTension: 0.1,
-                backgroundColor: "rgba(167,105,0,0.4)",
-                borderColor: "rgb(167, 105, 0)",
-                borderCapStyle: 'butt',
-                borderDash: [],
-                borderDashOffset: 0.0,
-                borderJoinStyle: 'miter',
-                pointBorderColor: "white",
-                pointBackgroundColor: "black",
+                pointRadius: 3,
+                pointHitRadius: 10
+            },
+            {
+                label: 'Humedad',
+                data: <?php echo json_encode(array_column($dashboardData[4], 'humidity')) ?>,
+                backgroundColor: [
+                    'rgba(13, 109, 101, 1)'
+                ],
+                borderColor: [
+                    'rgba(1, 121, 111, 1)'
+                ],
+                borderWidth: 2,
+                pointBorderColor: "rgba(1, 97, 89, 1)",
+                pointBackgroundColor: "rgba(1, 97, 89, 1)",
                 pointBorderWidth: 1,
                 pointHoverRadius: 8,
-                pointHoverBackgroundColor: "brown",
-                pointHoverBorderColor: "yellow",
+                pointHoverBackgroundColor: "yellow",
+                pointHoverBorderColor: "brown",
                 pointHoverBorderWidth: 2,
-                pointRadius: 4,
+                pointRadius: 3,
                 pointHitRadius: 10,
-                // notice the gap in the data and the spanGaps: false
-                data: [<?php echo "'" . implode("','", array_column($dashboardData[4], 'humidity')) . "'"; ?>],
-                spanGaps: false,
-              }
-          ]
-      };
+            }]
+        }
 
-      // Notice the scaleLabel at the same level as Ticks
-      var options = {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-                  yAxes: [{
-                      ticks: {
-                          beginAtZero:true
-                      },
-                      scaleLabel: {
-                           display: false,
-                           labelString: 'Moola',
-                           fontSize: 20 
-                        }
-                  }]            
-              }  
-      };
-
-      // Chart declaration:
-      var myBarChart = new Chart(ctx, {
+    var myChart = new Chart(ctx, {
         type: 'line',
         data: data,
         options: options
-      });
+    });
+
+
   </script>
 
 <?php
@@ -209,7 +194,7 @@ if ($this->partialview === 'project'){
                  <h1 id='ds18b20_1' class="d-flex justify-content-center large-font">0</h1>
                  <p class="time-font mb-0 ml-4 mt-auto"><?php echo $hours ?> <span class="sm-font"><?php echo $am ?></span></p>
                  <p class="ml-4 mb-4"><?php echo $today ?></p>
-                 <div class="card-footer" style="background-color: #fff; color: #000; box-shadow: 0px 8px 16px 4px #9E9E9E; border-radius: 0px 0px 20px 20px;">
+                 <div class="card-footer" style="background-color: #CFD8DC; color: #000; box-shadow: 0px 8px 16px 4px #9E9E9E; border-radius: 0px 0px 20px 20px;">
                     <canvas id="termometro1" width="90%"></canvas>
                  </div>
               </div>
@@ -225,7 +210,7 @@ if ($this->partialview === 'project'){
                  <h1 id='ds18b20_2' class="d-flex justify-content-center large-font">0</h1>
                  <p class="time-font mb-0 ml-4 mt-auto"><?php echo $hours ?> <span class="sm-font"><?php echo $am ?></span></p>
                  <p class="ml-4 mb-4"><?php echo $today ?></p>
-                 <div class="card-footer" style="background-color: #fff; color: #000; box-shadow: 0px 8px 16px 4px #9E9E9E; border-radius: 0px 0px 20px 20px;">
+                 <div class="card-footer" style="background-color: #CFD8DC; color: #000; box-shadow: 0px 8px 16px 4px #9E9E9E; border-radius: 0px 0px 20px 20px;">
                     <canvas id="termometro2" width="90%"></canvas>
                  </div>
               </div>
@@ -247,101 +232,148 @@ if ($this->partialview === 'project'){
 
   <script>
     var ctx = document.getElementById('termometro1').getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [<?php echo "'" . implode("','", array_column($dashboardData[1], 'date')) . "'"; ?>],
-            datasets: [{
-                label: 'Termómetro 1',
-                data: [<?php echo implode(',', array_column($dashboardData[1], 'temp')) ?>],
-                fill: false,
-                borderColor: [
-                    'rgb(75, 192, 192)'
-                ],
-                lineTension: 0.1,              
-                borderWidth: 1
-            }]
-        },
-        options: {
+    var options = {
+            maintainAspectRatio: true,
             scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
+                y: {
+                    beginAtZero: true
+                }
             }
         }
+
+    var data = {
+            labels: <?php echo json_encode(array_column($dashboardData[1], 'date')) ?>,
+            datasets: [{
+                label: 'Termómetro 1',
+                data: <?php echo json_encode(array_column($dashboardData[1], 'temp')) ?>,
+                backgroundColor: [
+                    'rgba(204, 0, 0, 1)'
+                ],
+                borderColor: [
+                    'rgba(255, 0, 0, 1)'
+                ],
+                borderWidth: 2,
+                pointBorderColor: "black",
+                pointBackgroundColor: "black",
+                pointBorderWidth: 1,
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: "yellow",
+                pointHoverBorderColor: "brown",
+                pointHoverBorderWidth: 2,
+                pointRadius: 3,
+                pointHitRadius: 10
+            }]
+        }
+
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: options
     });
+
   </script>
 
   <script>
     var ctx = document.getElementById('termometro2').getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [<?php echo "'" . implode("','", array_column($dashboardData[2], 'date')) . "'"; ?>],
-            datasets: [{
-                label: 'Termómetro 2',
-                data: [<?php echo implode(',', array_column($dashboardData[1], 'temp')) ?>],
-                fill: false,
-                borderColor: [
-                    'rgb(75, 192, 192)'
-                ],
-                lineTension: 0.1,              
-                borderWidth: 1
-            }]
-        },
-        options: {
+    var options = {
+            maintainAspectRatio: true,
             scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
+                y: {
+                    beginAtZero: true
+                }
             }
         }
+
+    var data = {
+            labels: <?php echo json_encode(array_column($dashboardData[2], 'date')) ?>,
+            datasets: [{
+                label: 'Termómetro 2',
+                data: <?php echo json_encode(array_column($dashboardData[2], 'temp')) ?>,
+                backgroundColor: [
+                    'rgba(0, 0, 204, 1)'
+                ],
+                borderColor: [
+                    'rgba(0, 0, 255, 1)'
+                ],
+                borderWidth: 2,
+                pointBorderColor: "rgba(36, 17, 120, 1)",
+                pointBackgroundColor: "rgba(36, 17, 120, 1)",
+                pointBorderWidth: 1,
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: "yellow",
+                pointHoverBorderColor: "brown",
+                pointHoverBorderWidth: 2,
+                pointRadius: 3,
+                pointHitRadius: 10
+            }]
+        }
+
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: options
     });
   </script>
 
   <script>
     var ctx = document.getElementById('2termometros').getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [<?php echo "'" . implode("','", array_column($dashboardData[1], 'date')) . "'"; ?>],
-            datasets: [
-              {
-                label: 'Termómetro 1',
-                data: [<?php echo implode(',', array_column($dashboardData[1], 'temp')) ?>],
-                fill: false,
-                borderColor: [
-                    'rgb(75, 192, 192)'
-                ],
-                lineTension: 0.1,              
-                borderWidth: 1
-            },
-            {
-              label: 'Termómetro 2',
-              data: [<?php echo implode(',', array_column($dashboardData[2], 'temp')) ?>],
-              fill: false,
-              borderColor: [
-                  'red'
-              ],
-              lineTension: 0.1,              
-              borderWidth: 1
-            }]
-        },
-        options: {
-          maintainAspectRatio: false,
-          responsive: true,
+    var options = {
+            maintainAspectRatio: false,
             scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
+                y: {
+                    beginAtZero: true
+                }
             }
         }
+
+    var data = {
+            labels: <?php echo json_encode(array_column($dashboardData[1], 'date')) ?>,
+            datasets: [{
+                label: 'Temperatura',
+                data: <?php echo json_encode(array_column($dashboardData[1], 'temp')) ?>,
+                backgroundColor: [
+                    'rgba(204, 0, 0, 1)'
+                ],
+                borderColor: [
+                    'rgba(255, 0, 0, 1)'
+                ],
+                borderWidth: 2,
+                pointBorderColor: "black",
+                pointBackgroundColor: "black",
+                pointBorderWidth: 1,
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: "yellow",
+                pointHoverBorderColor: "brown",
+                pointHoverBorderWidth: 2,
+                pointRadius: 3,
+                pointHitRadius: 10
+            },
+            {
+                label: 'Humedad',
+                data: <?php echo json_encode(array_column($dashboardData[2], 'temp')) ?>,
+                backgroundColor: [
+                    'rgba(0, 0, 204, 1)'
+                ],
+                borderColor: [
+                    'rgba(0, 0, 255, 1)'
+                ],
+                borderWidth: 2,
+                pointBorderColor: "rgba(36, 17, 120, 1)",
+                pointBackgroundColor: "rgba(36, 17, 120, 1)",
+                pointBorderWidth: 1,
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: "yellow",
+                pointHoverBorderColor: "brown",
+                pointHoverBorderWidth: 2,
+                pointRadius: 3,
+                pointHitRadius: 10,
+            }]
+        }
+
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: options
     });
   </script>
 <?php
