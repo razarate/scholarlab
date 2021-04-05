@@ -12,8 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 
 $doc = JFactory::getDocument();
 $doc->addStylesheet( JURI::base(true) . '/components/com_scholarlab/assets/css/style.css' );
-$doc->addStylesheet( JURI::base(true) . '/components/com_scholarlab/assets/Chart.js/Chart.min.css' );
-$doc->addScript( JURI::base(true) . '/components/com_scholarlab/assets/Chart.js/Chart.bundle.min.js' );
+$doc->addScript( JURI::base(true) . '/components/com_scholarlab/assets/Chart.js/chart.js');
 
 JLoader::register('SensorHelper', JPATH_COMPONENT . '/helpers/sensor.php');
 	
